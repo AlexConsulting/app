@@ -281,6 +281,16 @@
     margin-bottom:8px
   }
 
+.frase-inicial {
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  margin: 20px 0;
+  color: #444;
+  padding: 0 20px;
+  line-height: 1.4;
+}
+
 </style>
 </head>
 <body>
@@ -307,37 +317,50 @@
     </div>
   </header>
 
-  <main role="main" aria-label="Painel principal">
+<main role="main" aria-label="Painel principal">
+
+    <!-- Frase inicial de acolhimento (agora aparece sempre ao carregar) -->
+    <div id="fraseInicial" class="frase-inicial" aria-live="polite"></div>
+
     <p class="small">Escreva, fale sobre o que sente ou clique em "Me Ajude" para receber apoio.</p>
+
     <textarea id="inputText" placeholder="Ex.: Estou me sentindo sem esperança, não sei o que fazer..."></textarea>
-    <button class="btn ghost" id="voiceBtn">Falar 🗣️</button>
+
     <div class="controls">
       <button class="btn primary" id="analyzeBtn">Me Ajude 🙏</button>
       <button class="btn ghost" id="breathBtn">Respiração Guiada</button>
       <button class="btn ghost" id="prayBtn">Ore comigo</button>
     </div>
 
+    <!-- Caixa de resultado (fica oculta até a pessoa clicar em Me Ajude) -->
     <div class="result" id="resultBox" aria-live="polite">
       <div id="messageText"></div>
       <div class="verse" id="verseText"></div>
+
       <div class="urgent hidden" id="urgentBox">
-        Se você está em risco de se machucar ou pensa em tirar a própria vida, ligue agora para o CVV: <b>188</b> (24h). Procure emergência local imediatamente.
-        <div style="margin-top:8px"><button class="btn warn" id="cvvBtn">Ligar para o CVV — 188</button></div>
+        Se você está em risco de se machucar ou pensa em tirar a própria vida, ligue agora para o CVV: <b>188</b> (24h). 
+        Procure emergência local imediatamente.
+        <div style="margin-top:8px">
+          <button class="btn warn" id="cvvBtn">Ligar para o CVV — 188</button>
+        </div>
       </div>
-      <div class="small" style="margin-top:10px">Lembre-se: reconhecer limites e pedir ajuda é um ato de coragem. Busque apoio profissional.</div>
+
+      <div class="small" style="margin-top:10px">
+        Lembre-se: reconhecer limites e pedir ajuda é um ato de coragem. Busque apoio profissional.
+      </div>
     </div>
 
     <div class="actions">
-     <button class="btn primary" id="susBtn">Busque Ajuda (SUS)</button>
-    <button class="btn primary" id="professionalsBtn">Profissionais de Saúde</button>
-    <button class="btn danger" id="dangerBtn">Estou em perigo agora</button>
+      <button class="btn" id="susBtn">Busque Ajuda (SUS)</button>
+      <button class="btn" id="professionalsBtn">Profissionais de Saúde</button>
+      <button class="btn" id="dangerBtn" style="background:#ff6b6b;color:white">Estou em perigo agora</button>
     </div>
 
     <div class="footer">
       <p class="small">CVV (Centro de Valorização da Vida) — Telefone: <b>188</b>. Em casos de emergência, procure o serviço de saúde local.</p>
     </div>
-  </main>
-  
+
+</main>
   
   <!-- Modal: Professionals -->
   <div class="modal" id="modalProf">
@@ -654,6 +677,40 @@ const verses = {
     "Salmo 91:4 — Ele te cobrirá com suas penas, e debaixo das suas asas estarás seguro."
   ]
 };
+
+// Frases iniciais bíblicas e acolhedoras
+const frasesIniciais = [
+  "Deus conhece sua dor — e Ele caminha com você agora.",
+  "Mesmo cansado, você ainda é amado por Deus.",
+  "Nada está perdido para Aquele que faz novas todas as coisas.",
+  "Quando falta força, Deus sustenta com Suas mãos.",
+  "A sua vida tem valor — muito mais do que você imagina.",
+  "Deus está perto dos que têm o coração quebrado.",
+  "A esperança não morreu — Deus ainda está escrevendo a sua história.",
+  "Você não está sozinho. Deus está com você.",
+  "O amor de Deus te envolve mesmo quando tudo dói.",
+  "Deus cuida de você até nos dias em que você não consegue sentir nada.",
+  "A paz que você procura existe — e Deus pode te dar.",
+  "Deus te vê, te ouve e te entende.",
+  "Há descanso para sua alma cansada — Deus promete isso.",
+  "Quando você não sabe mais orar, Deus ainda te sustenta.",
+  "Você não é um erro. Você é uma criação amada por Deus.",
+  "Deus transforma lágrimas em força.",
+  "Um dia de cada vez — Deus caminha com você em todos eles.",
+  "Você está vivo, e isso significa que Deus ainda tem propósito para você.",
+  "Mesmo em silêncio, Deus trabalha a seu favor.",
+  "Deus segura sua mão quando você não consegue seguir sozinho.",
+  "A sua dor não define o seu futuro.",
+  "Deus é maior que o medo que te atormenta.",
+  "A luz voltará — Deus não te abandonou.",
+  "Nenhuma ferida é grande demais para o amor de Deus curar.",
+  "Há esperança para você — sempre houve, sempre haverá.",
+  "Deus te ama exatamente como você é, mesmo ferido.",
+  "Não desista: Deus está trabalhando onde você não consegue ver.",
+  "Hoje pode ser difícil, mas Deus prometeu que você não estaria sozinho.",
+  "O coração cansado também é amado, também é cuidado.",
+  "Um recomeço é possível — Deus abre portas onde nenhuma parece existir."
+];
 
 // ---------- LÓGICA DE ANÁLISE ----------
 function analyzeText(text){
