@@ -281,6 +281,36 @@
     margin-bottom:8px
   }
 
+/* Botão de voz */
+.voice-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+/* Ajuste do ícone */
+.voice-btn .mic-icon {
+  width: 20px;
+  height: 20px;
+  fill: var(--primary);
+  transition: fill 0.25s ease;
+}
+
+/* Hover especial com destaque */
+.voice-btn:hover {
+  background: rgba(74, 141, 247, 0.08);
+  box-shadow: 0 0 10px rgba(74, 141, 247, 0.35);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.voice-btn:hover .mic-icon {
+  fill: #3b7ae3;
+}
+
+
 </style>
 </head>
 <body>
@@ -303,7 +333,7 @@
     </div>
     <div class="brand">
       <h1>MeAjude.com</h1>
-      <p class="small">Acolhimento &amp; apoio — você não está sozinho</p>
+      <p class="small">Acolhimento &amp; Apoio — Você não está sozinho</p>
     </div>
   </header>
 
@@ -313,11 +343,16 @@
     <div id="fraseInicial" class="frase-inicial" aria-live="polite"></div>
 
     <p class="small">Escreva, fale sobre o que sente ou clique em "Me Ajude" para receber apoio.</p>
-
+	
     <textarea id="inputText" placeholder="Ex.: Estou me sentindo sem esperança, não sei o que fazer..."></textarea>
-      
-<button class="btn ghost" id="voiceBtn">Falar 🗣️</button>
-    <div class="controls">
+	<button class="btn ghost voice-btn" id="voiceBtn">
+  <svg class="mic-icon" viewBox="0 0 24 24">
+    <path d="M12 14c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v5c0 1.66 1.34 3 3 3zm5-3c0 3-2.24 5-5 5s-5-2-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+  </svg>
+  <span>Falar</span>
+</button>
+
+	<div class="controls">
       <button class="btn primary" id="analyzeBtn">Me Ajude 🙏</button>
       <button class="btn ghost" id="breathBtn">Respiração Guiada</button>
       <button class="btn ghost" id="prayBtn">Ore comigo</button>
@@ -342,9 +377,10 @@
     </div>
 
     <div class="actions">
-      <button class="btn" id="susBtn">Busque Ajuda (SUS)</button>
-      <button class="btn" id="professionalsBtn">Profissionais de Saúde</button>
-      <button class="btn" id="dangerBtn" style="background:#ff6b6b;color:white">Estou em perigo agora</button>
+    <button class="btn primary" id="susBtn">Busque Ajuda (SUS)</button>
+    <button class="btn primary" id="professionalsBtn">Profissionais de Saúde</button>
+    <button class="btn danger" id="dangerBtn">Estou em perigo agora</button>
+
     </div>
 
     <div class="footer">
@@ -352,7 +388,7 @@
     </div>
 
 </main>
-  
+
   <!-- Modal: Professionals -->
   <div class="modal" id="modalProf">
     <div class="card" role="dialog" aria-modal="true" aria-labelledby="proTitle">
@@ -703,6 +739,19 @@ const frasesIniciais = [
   "Um recomeço é possível — Deus abre portas onde nenhuma parece existir."
 ];
 
+// ---------- Função aleatória frases ---------
+
+function carregarFraseInicial() {
+  const frase =
+    frasesIniciais[Math.floor(Math.random() * frasesIniciais.length)];
+
+  const elemento = document.getElementById("fraseInicial");
+  if (elemento) {
+    elemento.innerText = frase;
+  }
+}
+
+
 // ---------- LÓGICA DE ANÁLISE ----------
 function analyzeText(text){
   const t = text.toLowerCase();
@@ -853,7 +902,13 @@ window.addEventListener('load', ()=>{
 
 // ---------- Observação final: nada aqui substitui ajuda profissional ----------
 /* Nota: este protótipo foi feito para acolhimento e indicação de ajuda. Não substitui avaliação clínica. */
+
+window.onload = () => {
+  carregarFraseInicial();
+};
+
 </script>
+
 <script>
 
 // … aqui ficam as outras funções e lógicas que você já tem …
@@ -893,4 +948,3 @@ document.getElementById("voiceBtn")?.addEventListener("click", () => {
 </script>
 </body>
 </html>
-
