@@ -7,345 +7,183 @@
 <meta name="description" content="MeAjude.com - Acolhimento para pessoas em luto, ansiedade e depressão. Mensagens de apoio, versículos e caminhos para ajuda."/>
 <style>
   :root{
-    --bg1:#f6f9ff; 
-    --bg2:#eef6f9; 
-    --card:#ffffff;
-    --primary:#4a8df7; 
-    --primary-dark:#3b7ae3;
-    --accent:#8e9bf0; 
-    --danger:#c0392b;
-    --danger-dark:#a83224;
-    --muted:#6b7280; 
-    --rounded:14px;
-    --maxw:720px;
+    --bg1:#f6f9ff; --bg2:#eef6f9; --card:#ffffff;
+    --primary:#4a8df7; --primary-dark:#3b7ae3; --accent:#8e9bf0;
+    --danger:#d64545; --danger-dark:#a83224;
+    --muted:#6b7280; --rounded:14px; --maxw:900px;
+    --text:#17202a; --risk-color: var(--primary);
+  }
+  
+/* DARK THEME variables (toggle by body.dark) */
+  body.dark { 
+    --bg1:#0f1724; 
+    --bg2:#0b1220; 
+    --card:#071226; 
+    
+    --text:#ffffff; /* BRANCO PURO (Texto Principal) */
+    --muted:#e9eefc; /* Cinza claro (Texto Secundário) */
+    
+    --primary:#6ea9ff; 
+    --primary-dark:#5b95f0; 
+    --risk-color-light: #ffc36e; 
   }
 
+/* 🆕 NOVO BLOCO: FORÇA O TEXTO PRINCIPAL A SER BRANCO NO MODO ESCURO */
+body.dark p, 
+body.dark h1,
+body.dark h2,
+body.dark main,
+body.dark main > * { 
+    color: var(--text) !important; /* Usa a variável BRANCA */
+}
+
+  /* Estilo do Puxador (Thumb) para Webkit (Chrome/Safari) */
+  #suicideWeight::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--risk-color); /* Usa a cor dinâmica */
+    border: 3px solid var(--card); /* Borda para destaque no tema escuro/claro */
+    cursor: pointer;
+  }
+
+  /* Estilo do Puxador (Thumb) para Firefox */
+  #suicideWeight::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--risk-color); /* Usa a cor dinâmica */
+    border: 3px solid var(--card);
+    cursor: pointer;
+  }
+  
   *{box-sizing:border-box}
   html,body{height:100%}
-
   body{
-    margin:0; 
-    padding:20px; 
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    margin:0; padding:24px; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     background: linear-gradient(160deg,var(--bg1),var(--bg2));
-    color:#17202a; 
-    -webkit-font-smoothing:antialiased;
+    color:var(--text); -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    display:flex; 
-    align-items:flex-start; 
-    justify-content:center;
+    display:flex; align-items:flex-start; justify-content:center;
   }
 
-  .wrap{
-    width:100%; 
-    max-width:var(--maxw);
+  .wrap{width:100%; max-width:var(--maxw);}
+  header{display:flex; gap:16px; align-items:center; margin-bottom:18px;}
+  .logo{width:64px; height:64px; background:linear-gradient(180deg,#fff 0%, #f0f8ff 100%); border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(20,40,80,0.06);}
+  body.dark .logo{background:linear-gradient(180deg,#071226 0%, #0a1b33 100%);}
+  .brand h1{margin:0;font-size:20px;} .brand p{margin:0;color:var(--muted); font-size:13px}
+  main{background:var(--card); border-radius:var(--rounded); padding:20px; box-shadow:0 10px 34px rgba(20,40,80,0.06)}
+  textarea{width:100%; min-height:120px; padding:14px; border-radius:12px; border:1px solid #e6eefc; font-size:15px; resize:vertical; background:transparent; color:var(--text)}
+  body.dark textarea{border:1px solid #1e2a3a; background:#071226;}
+  .controls{display:flex; gap:12px; margin-top:14px; flex-wrap:wrap}
+  button.btn{flex:1 1 auto; padding:12px 16px; border-radius:10px; font-weight:700; cursor:pointer; border:1px solid transparent; transition:background .2s ease, box-shadow .2s ease, transform .15s ease;}
+  button.primary{background:var(--primary); border:1px solid var(--primary); color:white}
+  button.primary:hover{background:var(--primary-dark); box-shadow:0 6px 18px rgba(74,141,247,0.18); transform: translateY(-2px);}
+  button.ghost{background:transparent; border:1px solid var(--primary); color:var(--primary)}
+  button.ghost:hover{background:rgba(74,141,247,0.04); box-shadow:0 6px 12px rgba(74,141,247,0.06); transform: translateY(-2px);}
+  button.warn{background:#ffecf0; color:var(--danger); border:1px solid rgba(192,57,43,0.4);}
+  button.warn:hover{background:#ffd6da; box-shadow:0 6px 12px rgba(192,57,43,0.06); transform: translateY(-2px);}
+  button.danger{background:var(--danger); color:white; border:1px solid var(--danger)}
+  button.danger:hover{background:var(--danger-dark); box-shadow:0 6px 18px rgba(192,57,43,0.12); transform: translateY(-2px);}
+  .result{margin-top:18px; padding:16px; border-radius:10px; background:linear-gradient(180deg,#fbfcff,#f1f7ff); display:none; animation: fadeIn .45s ease;}
+  body.dark .result{background:linear-gradient(180deg,#071a2b,#082034)}
+  .verse{margin-top:10px; font-style:italic; color:#2b477a}
+  body.dark .verse{color:#9fbff8}
+  .urgent{margin-top:12px; padding:12px; background:#fff6f6; border-left:4px solid var(--danger); color:var(--danger); border-radius:8px; font-weight:700}
+  .small{font-size:13px; color:var(--muted)}
+  .flex-row{display:flex; gap:8px; align-items:center}
+  .actions{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap}
+  .footer{margin-top:14px; font-size:13px; color:var(--muted)}
+
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1200; background:rgba(6,12,20,0.45)}
+  .modal .card{width:94%; max-width:720px; background:var(--card); padding:18px; border-radius:12px}
+  .close{float:right; cursor:pointer; font-size:20px; background:transparent; border:1px solid rgba(0,0,0,0.06); border-radius:6px; padding:6px}
+  .breath{width:84px; height:84px; border-radius:999px; display:flex; align-items:center; justify-content:center; margin:12px auto; background:linear-gradient(180deg,#f7fbff,#eef6ff); border:1px solid #e6f0ff;}
+  .hidden{display:none}
+  @media(min-width:720px){ .controls button{flex:0 0 auto} }
+  .logo svg {width:46px;height:46px}
+  .pro-list{margin-top:12px}
+  .pro-item{padding:12px;border-radius:8px;border:1px solid #f1f6ff;margin-bottom:10px}
+  .frase-inicial {font-size:1.2rem; font-weight:600; text-align:center; margin:12px 0 18px 0; color:#444; padding-left:clamp(6px,4vw,24px); padding-right:clamp(6px,4vw,24px); line-height:1.4; animation: fadeIn 1s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:translateY(0)}}
+
+  /* Voice button */
+  .voice-btn {display:flex !important; align-items:center; justify-content:center; gap:8px; font-weight:700; position:relative; overflow:hidden; transition:background .2s ease, box-shadow .2s ease, transform .15s ease; border-radius:10px; padding:10px 12px;}
+  .mic-icon{width:18px;height:18px; fill:var(--primary); transition:transform .18s ease, fill .18s ease;}
+  .voice-btn:hover{background:rgba(74,141,247,0.04); border:1px solid var(--primary); box-shadow:0 6px 12px rgba(74,141,247,0.06); transform:translateY(-2px); }
+  .voice-btn.listening{background:rgba(255,80,80,0.06) !important; border-color:#ff5252 !important; box-shadow:0 0 18px rgba(255,80,80,0.06) !important; animation: pulse 1.4s infinite;}
+  .voice-btn.listening .mic-icon{fill:#ff4444 !important; transform:scale(1.12);}
+  @keyframes pulse{0%{box-shadow:0 0 0px rgba(255,80,80,0.12)}50%{box-shadow:0 0 18px rgba(255,80,80,0.18)}100%{box-shadow:0 0 0px rgba(255,80,80,0.12)}}
+
+  .settings{display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap}
+  .chip{padding:8px 10px; border-radius:999px; background:rgba(0,0,0,0.03); font-size:13px; color:var(--muted)}
+  .switch{display:inline-flex; align-items:center; gap:8px}
+
+  /* accessible focus */
+  button:focus{outline:3px solid rgba(74,141,247,0.12); outline-offset:4px}
+
+  @media(max-width:520px){
+    body{padding:12px}
+    .frase-inicial{font-size:1rem}
+    .brand h1{font-size:16px}
+    .logo{width:52px; height:52px}
   }
 
-  header{
-    display:flex; 
-    gap:12px; 
-    align-items:center; 
-    margin-bottom:14px;
+  /* language flags */
+  .lang-switch { display:flex; gap:8px; align-items:center; }
+  .lang-btn { display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border-radius:999px; background:transparent; border:1px solid transparent; cursor:pointer; font-weight:700; }
+  .lang-btn.active { border-color: rgba(0,0,0,0.06); background: rgba(0,0,0,0.02); }
+  .flag { width:20px; height:14px; display:inline-block; }
+
+  /* New Selector Style and Hiding Old (to comply with "NÃO REMOVA NADA") */
+  /* This hides the old buttons and makes the dropdown look like a styled component */
+  .lang-switch { display: none !important; }
+  .lang-selector-dropdown { position:relative; }
+  .lang-selector-dropdown select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: var(--card);
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid #e6eefc; /* light theme */
+    color: var(--text);
+    font-size: 15px;
+    /* Reset styles */
+    margin: 0;
+    line-height: inherit;
+    font-family: inherit;
   }
-
-  .logo{
-    width:64px; 
-    height:64px; 
-    background:linear-gradient(180deg,#fff 0%, #f0f8ff 100%);
-    border-radius:14px; 
-    display:flex; 
-    align-items:center; 
-    justify-content:center; 
-    box-shadow:0 6px 18px rgba(20,40,80,0.08);
+  body.dark .lang-selector-dropdown select {
+    border: 1px solid #1e2a3a;
+    background: #071226;
   }
-
-  .brand h1{
-    margin:0;
-    font-size:18px;
+  /* Custom dropdown arrow for better visuals (improving the flag area) */
+  .lang-selector-dropdown:after {
+    content: '▼';
+    font-size: 10px;
+    color: var(--muted);
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
   }
-
-  .brand p{
-    margin:0;
-    color:var(--muted); 
-    font-size:13px;
+  .lang-selector-dropdown select {
+    padding-right: 30px; /* Make space for the arrow */
   }
-
-  main{
-    background:var(--card); 
-    border-radius:var(--rounded); 
-    padding:16px; 
-    box-shadow:0 8px 30px rgba(20,40,80,0.06)
-  }
-
-  /* Frase inicial */
-  .frase-inicial {
-    font-size: 1.2rem;
-    font-weight: 500;
-    text-align: center;
-    margin: 20px 0;
-    color: #444;
-    padding: 0 20px;
-    line-height: 1.4;
-    animation: fadeIn 1.2s ease;
-  }
-
-  @keyframes fadeIn{
-    from{opacity:0; transform:translateY(10px)}
-    to{opacity:1; transform:translateY(0)}
-  }
-
-  textarea{
-    width:100%; 
-    min-height:110px; 
-    padding:12px; 
-    border-radius:10px; 
-    border:1px solid #e6eefc;
-    font-size:15px; 
-    resize:vertical;
-  }
-
-  .controls{
-    display:flex; 
-    gap:8px; 
-    margin-top:10px; 
-    flex-wrap:wrap
-  }
-
-  /* BOTÕES ATUALIZADOS */
-  button.btn{
-    flex:1 1 auto; 
-    padding:12px 14px; 
-    border-radius:10px; 
-    font-weight:600;
-    cursor:pointer;
-    border:1px solid transparent;
-    transition:all 0.25s ease;
-  }
-
-  /* Azul padrão */
-  button.primary{
-    background:var(--primary);
-    border:1px solid var(--primary);
-    color:white;
-  }
-  button.primary:hover{
-    background:var(--primary-dark);
-    box-shadow:0 0 10px rgba(74,141,247,0.45);
-    transform: translateY(-2px);
-  }
-
-  /* Azul contornado */
-  button.ghost{
-    background:transparent;
-    border:1px solid var(--primary);
-    color:var(--primary);
-  }
-  button.ghost:hover{
-    background:rgba(74,141,247,0.08);
-    box-shadow:0 0 12px rgba(74,141,247,0.25);
-    transform: translateY(-2px);
-  }
-
-  /* Botão PERIGO leve */
-  button.warn{
-    background:#ffecf0;
-    color:var(--danger);
-    border:1px solid rgba(192,57,43,0.4);
-  }
-  button.warn:hover{
-    background:#ffd6da;
-    box-shadow:0 0 12px rgba(192,57,43,0.45);
-    transform: translateY(-2px);
-  }
-
-  /* Botão PERIGO FORTE */
-  button.danger{
-    background:var(--danger);
-    color:white;
-    border:1px solid var(--danger);
-  }
-  button.danger:hover{
-    background:var(--danger-dark);
-    box-shadow:0 0 14px rgba(192,57,43,0.55);
-    transform: translateY(-2px);
-  }
-
-  /* RESULTADOS */
-  .result{
-    margin-top:16px; 
-    padding:14px; 
-    border-radius:10px; 
-    background:linear-gradient(180deg,#fbfcff,#f1f7ff); 
-    display:none;
-  }
-
-  .verse{
-    margin-top:8px; 
-    font-style:italic; 
-    color:#2b477a
-  }
-
-  .urgent{
-    margin-top:12px; 
-    padding:12px; 
-    background:#fff6f6; 
-    border-left:4px solid var(--danger); 
-    color:var(--danger); 
-    border-radius:8px; 
-    font-weight:700
-  }
-
-  .small{
-    font-size:13px; 
-    color:var(--muted)
-  }
-
-  .flex-row{
-    display:flex; 
-    gap:8px; 
-    align-items:center
-  }
-
-  .actions{
-    display:flex; 
-    gap:8px; 
-    margin-top:12px; 
-    flex-wrap:wrap
-  }
-
-  .footer{
-    margin-top:12px; 
-    font-size:13px; 
-    color:var(--muted)
-  }
-
-  /* Modal */
-  .modal{
-    position:fixed; 
-    inset:0; 
-    display:none; 
-    align-items:center; 
-    justify-content:center; 
-    z-index:1200; 
-    background:rgba(6,12,20,0.45)
-  }
-
-  .modal .card{
-    width:94%; 
-    max-width:640px; 
-    background:white; 
-    padding:16px; 
-    border-radius:12px
-  }
-
-  .close{
-    float:right; 
-    cursor:pointer; 
-    font-size:20px
-  }
-
-  /* Respiração guiada */
-  .breath{
-    width:84px; 
-    height:84px; 
-    border-radius:999px; 
-    display:flex; 
-    align-items:center; 
-    justify-content:center;
-    margin:12px auto; 
-    background:linear-gradient(180deg,#f7fbff,#eef6ff); 
-    border:1px solid #e6f0ff;
-  }
-
-  .hidden{
-    display:none
-  }
-
-  @media(min-width:720px){
-    .controls button{flex:0 0 auto}
-  }
-
-  .logo svg {
-    width:46px;
-    height:46px
-  }
-
-  .pro-list{
-    margin-top:10px
-  }
-
-  .pro-item{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #f1f6ff;
-    margin-bottom:8px
-  }
-
-/* Botão de voz */
-.voice-btn {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 600;
-  position: relative;
-  overflow: hidden;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-.voice-btn .mic-icon {
-  width: 20px;
-  height: 20px;
-  fill: var(--primary);
-  transition: transform 0.3s ease, fill 0.3s ease;
-}
-
-/* Hover normal */
-.voice-btn:hover {
-  background: rgba(74, 141, 247, 0.08);
-  box-shadow: 0 0 12px rgba(74, 141, 247, 0.35);
-  border-color: var(--primary);
-  transform: translateY(-2px);
-}
-.voice-btn:hover .mic-icon {
-  fill: #3b7ae3;
-}
-
-/* =============================================== */
-/*  ANIMAÇÃO DURANTE A GRAVAÇÃO (MODE PREMIUM)     */
-/* =============================================== */
-
-.voice-btn.listening {
-  background: rgba(255, 80, 80, 0.12) !important;
-  border-color: #ff5252 !important;
-  box-shadow: 0 0 16px rgba(255, 80, 80, 0.5) !important;
-  animation: pulse 1.4s infinite ease-in-out;
-}
-
-.voice-btn.listening .mic-icon {
-  fill: #ff4444 !important;
-  transform: scale(1.25);
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0px rgba(255, 80, 80, 0.5); }
-  50% { box-shadow: 0 0 18px rgba(255, 80, 80, 0.8); }
-  100% { box-shadow: 0 0 0px rgba(255, 80, 80, 0.5); }
-}
-
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="logo" aria-hidden="true">
-      <!-- simple warm logo: hands + heart -->
       <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#8e9bf0"/><stop offset="1" stop-color="#4a8df7"/>
-          </linearGradient>
-        </defs>
+        <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#8e9bf0"/><stop offset="1" stop-color="#4a8df7"/></linearGradient></defs>
         <g fill="none" stroke="url(#g)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 36c6-10 18-14 20-14s14 4 20 14" />
           <path d="M22 44c0 5 6 9 10 9s10-4 10-9" />
@@ -354,115 +192,142 @@
       </svg>
     </div>
     <div class="brand">
-      <h1>MeAjude.com</h1>
-      <p class="small">Acolhimento &amp; Apoio — Você não está sozinho</p>
+      <h1 data-i18n="brand_title">MeAjude.com</h1>
+      <p class="small" data-i18n="brand_sub">Acolhimento &amp; Apoio — Você não está sozinho</p>
+    </div>
+
+    <div style="margin-left:auto; display:flex; gap:12px; align-items:center">
+      <div class="lang-switch" role="tablist" aria-label="Idioma">
+        <button class="lang-btn" id="lang-pt" data-lang="pt" aria-pressed="false" title="Português">
+          <span class="flag" aria-hidden="true">
+            <svg viewBox="0 0 22 14" xmlns="http://www.w3.org/2000/svg"><rect width="22" height="14" fill="#009b3a"/><rect x="4" y="3" width="14" height="8" rx="1.2" fill="#ffdf00" transform="rotate(0 11 7)"/><circle cx="11" cy="7" r="3" fill="#3e4095"/></svg>
+          </span>
+          PT
+        </button>
+        <button class="lang-btn" id="lang-en" data-lang="en" aria-pressed="false" title="English">
+          <span class="flag" aria-hidden="true">
+            <svg viewBox="0 0 22 14" xmlns="http://www.w3.org/2000/svg"><rect width="22" height="14" fill="#b22234"/><rect width="22" height="9" y="5" fill="#fff" opacity="0.2"/></svg>
+          </span>
+          EN
+        </button>
+        <button class="lang-btn" id="lang-es" data-lang="es" aria-pressed="false" title="Español">
+          <span class="flag" aria-hidden="true">
+            <svg viewBox="0 0 22 14" xmlns="http://www.w3.org/2000/svg"><rect width="22" height="14" fill="#c60b1e"/><rect width="22" height="10" y="2" fill="#ffc400" /></svg>
+          </span>
+          ES
+        </button>
+      </div>
+
+      <div class="lang-selector-dropdown">
+        <select id="languageSelect" aria-label="Seletor de Idioma">
+            <option value="pt">Pt-🇧🇷</option>
+            <option value="en">En-🇺🇸</option>
+            <option value="es">Es-🇪🇸</option>
+        </select>
+      </div>
+
+      <button id="themeToggle" class="chip" title="Toggle theme">🌙</button>
     </div>
   </header>
 
-<main role="main" aria-label="Painel principal">
+  <main role="main" aria-label="Painel principal">
 
-    <!-- Frase inicial de acolhimento (agora aparece sempre ao carregar) -->
     <div id="fraseInicial" class="frase-inicial" aria-live="polite"></div>
 
-    <p class="small">Escreva ou fale sobre o que sente e clique em "Me Ajude" para receber apoio.</p>
-	
-    <textarea id="inputText" placeholder="Ex.: Estou me sentindo sem esperança, não sei o que fazer..."></textarea>
-	<button class="btn ghost voice-btn" id="voiceBtn">
-  <svg class="mic-icon" viewBox="0 0 24 24">
-    <path d="M12 14c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v5c0 1.66 1.34 3 3 3zm5-3c0 3-2 5-5 5s-5-2-5-5H5c0 3.5 2.6 6.4 6 7v3h2v-3c3.4-.6 6-3.5 6-7h-2z"/>
-  </svg>
-  <span id="voiceLabel">Falar</span>
-</button>
+    <p class="small" data-i18n="prompt">Escreva, fale sobre o que sente ou clique em "Me Ajude" para receber apoio.</p>
 
+    <textarea id="inputText" placeholder="" data-i18n-placeholder="placeholder_example"></textarea>
 
-	<div class="controls">
-      <button class="btn primary" id="analyzeBtn">Me Ajude 🙏</button>
-      <button class="btn ghost" id="breathBtn">Respiração Guiada</button>
-      <button class="btn ghost" id="prayBtn">Ore comigo</button>
+    <div style="margin-top:12px; display:flex; gap:12px; align-items:center">
+      <button class="btn ghost voice-btn" id="voiceBtn" title="Falar">
+        <svg class="mic-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 14c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v5c0 1.66 1.34 3 3 3zm5-3c0 3-2 5-5 5s-5-2-5-5H5c0 3.5 2.6 6.4 6 7v3h2v-3c3.4-.6 6-3.5 6-7h-2z"/></svg>
+        <span id="voiceLabel">Falar</span>
+      </button>
+
+      <div class="settings" style="margin-left:auto">
+        <label class="chip" style="display:flex; gap:8px; align-items:center">
+          <span data-i18n="suicide_weight">Peso suicídio</span>
+          <input id="suicideWeight" type="range" min="1" max="10" value="1" style="width:140px; margin-left:8px">
+        </label>
+      </div>
     </div>
 
-    <!-- Caixa de resultado (fica oculta até a pessoa clicar em Me Ajude) -->
+    <div class="controls" style="margin-top:12px">
+      <button class="btn primary" id="analyzeBtn" data-i18n="btn_help">Me Ajude 🙏</button>
+      <button class="btn ghost" id="breathBtn" data-i18n="btn_breath">Respiração Guiada</button>
+      <button class="btn ghost" id="prayBtn" data-i18n="btn_pray">Ore comigo</button>
+    </div>
+
     <div class="result" id="resultBox" aria-live="polite">
       <div id="messageText"></div>
       <div class="verse" id="verseText"></div>
 
-      <div class="urgent hidden" id="urgentBox">
-        Se você está em risco de se machucar ou pensa em tirar a própria vida, ligue agora para o CVV: <b>188</b> (24h). 
-        Procure emergência local imediatamente.
-        <div style="margin-top:8px">
-          <button class="btn warn" id="cvvBtn">Ligar para o CVV — 188</button>
-        </div>
+      <div class="urgent hidden" id="urgentBox" role="alert">
+        <span id="urgentText"></span>
+        <div style="margin-top:10px"><button class="btn warn" id="cvvBtn" data-i18n="btn_cvv">Ligar para o CVV — 188</button></div>
       </div>
 
-      <div class="small" style="margin-top:10px">
-        Lembre-se: reconhecer limites e pedir ajuda é um ato de coragem. Busque apoio profissional.
-      </div>
+      <div class="small" style="margin-top:12px" data-i18n="reminder">Lembre-se: reconhecer limites e pedir ajuda é um ato de coragem. Busque apoio profissional.</div>
     </div>
 
-    <div class="actions">
-    <button class="btn primary" id="susBtn">Busque Ajuda (SUS)</button>
-    <button class="btn primary" id="professionalsBtn">Profissionais de Saúde</button>
-    <button class="btn danger" id="dangerBtn">Estou em perigo agora</button>
-
+    <div class="actions" style="margin-top:16px">
+      <button class="btn primary" id="susBtn" data-i18n="btn_sus">Busque Ajuda (SUS)</button>
+      <button class="btn primary" id="professionalsBtn" data-i18n="btn_pros">Profissionais de Saúde</button>
+      <button class="btn danger" id="dangerBtn" data-i18n="btn_danger">Estou em perigo agora</button>
     </div>
 
-    <div class="footer">
-      <p class="small">CVV (Centro de Valorização da Vida) — Telefone: <b>188</b>. Em casos de emergência, procure o serviço de saúde local.</p>
+    <div class="footer" style="margin-top:14px">
+      <p class="small" id="footerText"></p>
     </div>
 
-</main>
+  </main>
 
-  <!-- Modal: Professionals -->
   <div class="modal" id="modalProf">
     <div class="card" role="dialog" aria-modal="true" aria-labelledby="proTitle">
-      <span class="close" id="closeProf">&times;</span>
+      <button class="close" id="closeProf" aria-label="Fechar modal">&times;</button>
       <h2 id="proTitle">Profissionais de Saúde (Protótipo)</h2>
-      <p class="small">Digite sua cidade para ver profissionais — protótipo com lista estática (fácil de conectar a API).</p>
-      <input type="text" id="cityInput" placeholder="Ex.: São Paulo" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eaeefc" />
-      <div style="margin-top:8px"><button class="btn primary" id="searchPro">Buscar</button></div>
+      <p class="small" data-i18n="pro_tip">Digite sua cidade para ver profissionais — protótipo com lista estática (fácil de conectar a API).</p>
+      <input type="text" id="cityInput" placeholder="" data-i18n-placeholder="city_placeholder" style="width:100%;padding:10px;border-radius:8px;border:1px solid #eaeefc" />
+      <div style="margin-top:10px"><button class="btn primary" id="searchPro" data-i18n="btn_search">Buscar</button></div>
       <div class="pro-list" id="proList"></div>
     </div>
   </div>
 
-  <!-- Modal: Danger / urgent -->
   <div class="modal" id="modalDanger">
     <div class="card" role="dialog" aria-modal="true">
-      <span class="close" id="closeDanger">&times;</span>
-      <h2 style="color:var(--danger)">Se você está em perigo agora</h2>
-      <p><b>Telefone de emergência CVV:</b> <b style="font-size:20px">188</b> — disponível 24 horas.</p>
-      <p class="small">Se houver risco imediato, ligue para os serviços de emergência locais (SAMU/192 ou Bombeiros/193) ou vá ao pronto-socorro mais próximo.</p>
+      <button class="close" id="closeDanger" aria-label="Fechar modal">&times;</button>
+      <h2 style="color:var(--danger)" data-i18n="modal_danger_title">Se você está em perigo agora</h2>
+      <p><b data-i18n="modal_danger_cvv">Telefone de emergência CVV:</b> <b style="font-size:20px">188</b> — <span data-i18n="modal_danger_action">disponível 24 horas.</span></p>
+      <p class="small" data-i18n="modal_danger_text">Se houver risco imediato, ligue para os serviços de emergência locais (SAMU/192 ou Bombeiros/193) ou vá ao pronto-socorro mais próximo.</p>
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap">
-        <button class="btn primary" id="callCvvModal">Ligar CVV — 188</button>
-        <button class="btn ghost" id="closeDangerBtn">Voltar</button>
+        <button class="btn primary" id="callCvvModal" data-i18n="btn_cvv">Ligar CVV — 188</button>
+        <button class="btn ghost" id="closeDangerBtn" data-i18n="btn_back">Voltar</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Breathing -->
   <div class="modal" id="modalBreath">
     <div class="card" role="dialog" aria-modal="true">
-      <span class="close" id="closeBreath">&times;</span>
-      <h2>Respiração guiada</h2>
-      <p class="small">Siga a esfera: inspire 4s — segure 4s — expire 6s. Repita 3 vezes.</p>
+      <button class="close" id="closeBreath" aria-label="Fechar modal">&times;</button>
+      <h2 data-i18n="breath_title">Respiração guiada</h2>
+      <p class="small" data-i18n="breath_text">Siga a esfera: inspire 4s — segure 4s — expire 6s. Repita 3 vezes.</p>
       <div class="breath" id="breathCircle" aria-hidden="true"></div>
-      <div style="margin-top:10px; display:flex; gap:8px">
+      <div style="margin-top:12px; display:flex; gap:8px">
         <button class="btn primary" id="startBreath">Iniciar</button>
         <button class="btn ghost" id="stopBreath">Parar</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Prayer -->
   <div class="modal" id="modalPray">
     <div class="card" role="dialog" aria-modal="true">
-      <span class="close" id="closePray">&times;</span>
-      <h2>Ore comigo</h2>
-      <p class="small">Uma oração curta para conforto.</p>
-      <div style="margin-top:8px; font-style:italic; background:#fbfbff;padding:12px;border-radius:8px;">
-        Senhor, Tu conheces meu coração. Dá-me descanso, acalma minha mente e mostra um caminho. Dá forças para buscar ajuda. Amém.
-      </div>
-      <div style="margin-top:10px">
-        <button class="btn primary" id="prayClose">Fechar</button>
+      <button class="close" id="closePray" aria-label="Fechar modal">&times;</button>
+      <h2 data-i18n="pray_title">Ore comigo</h2>
+      <p class="small" data-i18n="pray_desc">Uma oração curta para conforto.</p>
+      <div id="prayText" style="margin-top:12px; font-style:italic; background:#fbfbff;padding:14px;border-radius:8px;">
+        </div>
+      <div style="margin-top:12px">
+        <button class="btn primary" id="prayClose" data-i18n="btn_close">Fechar</button>
       </div>
     </div>
   </div>
@@ -470,22 +335,25 @@
 </div>
 
 <script>
-/*
-  MeAjude.com - protótipo completo JS
-  - palavras-chave em várias categorias
-  - 150 mensagens (25 por categoria)
-  - versículos por categoria
-  - análise por contagem de ocorrências (peso maior para termos suicidas)
-*/
+/* ===========================================================
+   Single-file MeAjude (final)
+   - Logs removed completely
+   - i18n complete (pt / en / es)
+   - Verses in NVI / NIV / NVI-es (best effort)
+   - Flags selector (updates entire UI instantly)
+   =========================================================== */
 
-// ---------- PALAVRAS-CHAVE ----------
+/* -----------------------
+   KEYWORDS (Portuguese-based lexicon for detection)
+   If you later want language-specific keywords, we can add them.
+   ----------------------- */
 const keywords = {
   suicidio: [
     "suicídio","suicidio","me matar","quero morrer","não quero mais viver",
     "não quero mais","vou morrer","vou me matar","tirar a própria vida","acabar com tudo",
     "sumir","desaparecer","cansei de viver","não aguento mais viver","melhor sem mim",
     "melhor morto","melhor morrer","nao aguento","desisto","tirar minha vida","cortar os pulsos",
-    "automutilação","me cortar","me machucar","ninguém se importa","sou um peso","vida sem sentido"
+    "automutilação","me cortar","me machucar","ninguém se importa","sou um peso","vida sem sentido","besteira","fazer besteira",
   ],
   depressao: [
     "depressão","depressao","deprimido","deprimida","triste","tristeza",
@@ -520,475 +388,1440 @@ const keywords = {
   ]
 };
 
-// ---------- MENSAGENS (25 por categoria = 150 mensagens) ----------
-const messages = {
-  suicidio: [
-    "Eu estou aqui com você. Sua vida importa muito e merece cuidado.",
-    "Mesmo na escuridão, existe ajuda e pessoas que se importam. Procure agora.",
-    "Se você pensa em se machucar, ligue para o CVV (188) — fale com alguém agora.",
-    "Sua dor é real, mas podemos buscar formas de aliviar. Você não está sozinho.",
-    "Respire. Vamos dar um passo de cada vez — buscar ajuda é coragem.",
-    "Você é importante. Mesmo que pareça pesado agora, não está sozinho.",
-    "Não precisa lidar com isso sozinho. Compartilhar é um ato de coragem.",
-    "Há profissionais prontos para ouvir sem julgamentos. Procure apoio.",
-    "Sua história tem valor. Procure alguém que possa te ajudar a continuar.",
-    "Segurar a dor sozinho aumenta o peso. Peça ajuda agora, por favor.",
-    "Muitas pessoas encontram saída com apoio. Você não precisa desistir.",
-    "Se está em perigo, contate serviços de emergência ou o CVV imediatamente.",
-    "Você merece cuidado e carinho — busque ajuda profissional agora.",
-    "Saiba que pedir ajuda não é fraqueza; é o primeiro passo para se curar.",
-    "Você importa para alguém, mesmo que hoje não consiga ver. Fale com alguém.",
-    "Quando a dor é grande, agir rápido pode salvar uma vida. Procure apoio.",
-    "Falar sobre isso pode diminuir o peso. Dê um passo e ligue para alguém.",
-    "Pequenos passos salvam — compartilhe o que sente com alguém de confiança.",
-    "Não espere se a sensação de perigo aumenta. Procure ajuda imediata.",
-    "Há linhas de apoio e serviços que querem ouvir você — use-os agora.",
-    "Seu sofrimento merece atenção imediata. Procure um serviço de emergência.",
-    "Você é mais que seus pensamentos — procure amparo humano agora.",
-    "Permita-se pedir ajuda; existem profissionais que entendem e acolhem.",
-    "Seu presente pode mudar com apoio. Peça ajuda agora e com urgência.",
-    "Quando a mente dói muito, falar já é um respiro — ligue 188."
-  ],
-  depressao: [
-    "Sei que dói muito agora. Permita-se descansar e pedir ajuda.",
-    "A depressão não define você. Buscar ajuda é um passo gentil consigo.",
-    "Hoje pode ser pesado, mas há caminhos de cuidado e tratamento.",
-    "Reconhecer a dor é coragem — procure apoio profissional e próximo de você.",
-    "Pequenos passos de autocuidado importam: água, sono e falar com alguém.",
-    "Você não precisa carregar isso sozinho. Há profissionais que entendem.",
-    "A recuperação é possível; dê-se permissão para receber ajuda.",
-    "Mesmo sem forças, pedir ajuda é um ato de bravura.",
-    "Não ignore sua dor — ela pede atenção e cuidado especializado.",
-    "Compartilhar o que sente pode ser o começo da recuperação.",
-    "Aceitar apoio mostra força. Procure um psicólogo ou médico de confiança.",
-    "A cura pode ser gradual — celebre cada pequeno avanço.",
-    "Você merece cuidado humano e profissional. Comece pedindo ajuda.",
-    "Há tratamentos que ajudam. Você não está condenado a essa dor.",
-    "Sentir-se assim não é falha — é sinal de que você precisa de cuidado.",
-    "Procure um amigo, família ou serviço de saúde — fale com alguém hoje.",
-    "Mesmo que nada pareça funcionar ainda, continue buscando apoio.",
-    "Acolha-se com gentileza e dê tempo ao processo de cura.",
-    "Peça ajuda para criar um plano pequeno e factível de cuidados.",
-    "Você é valioso; a depressão não pode apagar seu valor.",
-    "Permita que alguém caminhe com você durante esse tempo difícil.",
-    "A mudança é possível com o suporte certo. Busque ajuda constante.",
-    "Medicação, terapia e suporte social ajudam — informe-se com um profissional.",
-    "Não espere que tudo melhore sozinho — inicie uma busca por ajuda.",
-    "Você já demonstrou coragem por estar aqui; continue pedindo suporte."
-  ],
-  ansiedade: [
-    "Respire devagar — inspire, segure, expire. Está tudo bem pedir ajuda.",
-    "Ansiedade é uma resposta intensa; com apoio você pode aprender a controlá-la.",
-    "Você não precisa enfrentar a ansiedade sozinho. Há técnicas e profissionais.",
-    "A calma pode ser re-treinada com práticas simples e apoio profissional.",
-    "Quando o coração acelera, pare por um momento e respire conscientemente.",
-    "Procure um profissional para aprender estratégias para crises de ansiedade.",
-    "Você não é fraco por sentir ansiedade — é humano. Peça ajuda.",
-    "Técnicas de respiração e terapia podem reduzir grande parte da angústia.",
-    "Identificar gatilhos é um passo importante — um terapeuta pode ajudar.",
-    "Permita-se pausar e cuidar. Estratégias simples ajudam no curto prazo.",
-    "Compartilhar o que sente com alguém de confiança já é um alívio.",
-    "Procure grupos de apoio ou terapia para lidar com a ansiedade.",
-    "Medicação pode ajudar em alguns casos — converse com um médico.",
-    "A sensação passa com práticas e suporte adequados. Busque orientação.",
-    "Respire e lembre-se: você não está sozinho nessa jornada.",
-    "Aceitar que precisa de ajuda é um passo de coragem, não de fraqueza.",
-    "Ferramentas práticas existem — peça orientação profissional.",
-    "A ansiedade não precisa dirigir sua vida; há caminhos para controle.",
-    "Fale sobre seus medos com alguém que te escute sem julgar.",
-    "Pequenas rotinas (sono, exercício) reduzem a intensidade dos sintomas.",
-    "Buscar ajuda precoce evita que a ansiedade se torne crônica.",
-    "Você pode aprender a reagir diferente — procure um especialista.",
-    "Respire, abrace a pausa e busque suporte profissional.",
-    "Há técnicas imediatas para crises — procure um profissional para aprender mais."
-  ],
-  solidao: [
-    "Você importa e merece ser ouvido. Procure falar com alguém hoje.",
-    "Estar sozinho não significa que você está sozinho para sempre.",
-    "Peça uma ligação a um amigo ou serviço de apoio — conexão cura.",
-    "Procure grupos, igrejas, ONGs locais — há redes de acolhimento.",
-    "Abrir seu coração para alguém é um passo de coragem e cura.",
-    "Mesmo pequenas conexões diárias podem diminuir a solidão.",
-    "Você não precisa carregar a dor de solidão sozinho.",
-    "Buscar ajuda profissional também é uma forma de encontrar companhia terapêutica.",
-    "Compartilhe um pouco do que sente — alguém pode estar esperando para ajudar.",
-    "Participar de atividades locais pode criar laços aos poucos.",
-    "Acolher-se e pedir companhia é um gesto de amor próprio.",
-    "A solidão não é sua identidade — ela é uma experiência que pode mudar.",
-    "Permita-se receber convites e sinais de cuidado dos outros.",
-    "Procure apoio comunitário; muitos se sentem como você e se conectam.",
-    "Você pode encontrar compreensão em terapeutas e grupos de apoio.",
-    "Tente uma pequena ação social hoje: uma ligação, uma mensagem.",
-    "Mesmo que pareça difícil, tente se abrir com alguém de confiança.",
-    "A presença de outro ser humano pode suavizar a dor profunda.",
-    "Invista em pequenas rotinas sociais — elas constroem conexões reais.",
-    "Você merece presença e cuidado — busque ativamente apoio.",
-    "Não espere que a solidão acabe sozinha — inicie passos para mudar.",
-    "Você não é esquecido — peça ajuda e permita que outros ajudem.",
-    "Acolher-se e aceitar ajuda é coragem. Procure apoio local.",
-    "Construir novas conexões leva tempo, mas cada passo conta."
-  ],
-  traicao: [
-    "Sinto muito pela dor que a traição causou — sua reação é compreensível.",
-    "Coração partido dói — permita-se chorar e buscar apoio.",
-    "Procure amigos e terapia para processar essa perda e reconstruir-se.",
-    "A traição não define seu valor; você merece amor e respeito.",
-    "Reconhecer a dor é o primeiro passo para a cura emocional.",
-    "Permita-se tempo para se curar — a pressa não ajuda o coração ferido.",
-    "Há caminhos para reconstrução após traição; busque orientação especializada.",
-    "Fale sobre seus sentimentos com alguém que possa ouvir sem julgar.",
-    "Você pode aprender com a dor e reconstruir sua história.",
-    "Acolher a própria vulnerabilidade é sinal de força.",
-    "Procure apoio profissional para traumas afetivos e autoestima abalada.",
-    "Reconectar-se consigo mesmo é essencial após uma decepção amorosa.",
-    "Permita-se reconstruir limites e saúde emocional.",
-    "Você merece relacionamentos respeitosos e seguros no futuro.",
-    "A dor da traição diminui com tempo e apoio adequado.",
-    "Procure estratégias práticas para lidar com ciúme e culpa.",
-    "Você não precisa carregar a solidão dessa dor — peça ajuda.",
-    "Apoio terapêutico ajuda a ressignificar o sofrimento.",
-    "Dê pequenos passos para cuidar de si e de suas emoções.",
-    "Perdoar (se quiser) é um processo — não se apresse.",
-    "Busque companhia que respeite seu processo de cura.",
-    "Reafirme seu valor: você é digno de amor sincero.",
-    "Fortaleça sua rede de apoio e escolha quem merece sua confiança.",
-    "Permita-se sonhar com novos começos quando estiver pronto."
-  ],
-  desespero: [
-    "Quando tudo parece sem saída, peça ajuda — há alternativas.",
-    "Focar em um pequeno próximo passo ajuda a diminuir o desespero.",
-    "Você não precisa resolver tudo de uma vez — comece com algo simples.",
-    "Compartilhar sua situação pode abrir portas para soluções práticas.",
-    "Procure serviços sociais e profissionais que podem ajudar concretamente.",
-    "Se sentir sufocado, faça uma pausa e procure apoio imediato.",
-    "Você não está condenado a essa situação — há possibilidades.",
-    "Buscar ajuda mostra coragem e aumenta suas chances de melhora.",
-    "Tentar dividir a carga com alguém já é um passo poderoso.",
-    "Técnicas de cuidado diário ajudam a estabilizar os dias difíceis.",
-    "Procure orientação profissional para criar um plano realista.",
-    "Você merece suporte prático e emocional — busque ambos.",
-    "Explorar recursos locais pode trazer soluções rápidas.",
-    "Pequenas ações contínuas geram mudanças ao longo do tempo.",
-    "Se a pressão aumenta, procure ajuda urgente — fale com alguém agora.",
-    "Acolher seus sentimentos permite clarear próximos passos.",
-    "Não menospreze seu sofrimento — busque intervenções práticas.",
-    "Há profissionais que ajudam a organizar a crise em etapas.",
-    "Permita-se pedir socorro: isso é sinal de maturidade e coragem.",
-    "Procure redes sociais e serviços locais que atuem em crise.",
-    "A esperança pode surgir com apoio e ações concretas.",
-    "Mesmo em caos, um pequeno plano pode trazer alívio imediato.",
-    "Busque suporte que une assistência emocional e prática.",
-    "Você não precisa enfrentar tudo sozinho — peça ajuda."
-  ]
+/* -----------------------
+   CONTENT (messages, verses, frasesIniciais) per language
+   Note: PT uses NVI phrasing (pt-br), EN uses NIV phrasing adapted, ES uses NVI-es phrasing
+   ----------------------- */
+const content = {
+  pt: {
+    messages: {
+      suicidio: [
+        "Eu estou aqui com você. Sua vida importa muito e merece cuidado.",
+        "Mesmo na escuridão, existe ajuda e pessoas que se importam. Procure agora.",
+        "Se você pensa em se machucar, ligue para o CVV (188) — fale com alguém agora.",
+        "Sua dor é real, mas podemos buscar formas de aliviar. Você não está sozinho.",
+        "Respire. Vamos dar um passo de cada vez — buscar ajuda é coragem.",
+        "Você é importante. Mesmo que pareça pesado agora, não está sozinho.",
+        "Não precisa lidar com isso sozinho. Compartilhar é um ato de coragem.",
+        "Há profissionais prontos para ouvir sem julgamentos. Procure apoio.",
+        "Sua história tem valor. Procure alguém que possa te ajudar a continuar.",
+        "Segurar a dor sozinho aumenta o peso. Peça ajuda agora, por favor.",
+        "Muitas pessoas encontram saída com apoio. Você não precisa desistir.",
+        "Se está em perigo, contate serviços de emergência ou o CVV imediatamente.",
+        "Você merece cuidado e carinho — busque ajuda profissional agora.",
+        "Saiba que pedir ajuda não é fraqueza; é o primeiro passo para se curar.",
+        "Você importa para alguém, mesmo que hoje não consiga ver. Fale com alguém.",
+        "Quando a dor é grande, agir rápido pode salvar uma vida. Procure apoio.",
+        "Falar sobre isso pode diminuir o peso. Dê um passo e ligue para alguém.",
+        "Pequenos passos salvam — compartilhe o que sente com alguém de confiança.",
+        "Não espere se a sensação de perigo aumenta. Procure ajuda imediata.",
+        "Há linhas de apoio e serviços que querem ouvir você — use-os agora.",
+        "Seu sofrimento merece atenção imediata. Procure um serviço de emergência.",
+        "Você é mais que seus pensamentos — procure amparo humano agora.",
+        "Permita-se pedir ajuda; existem profissionais que entendem e acolhem.",
+        "Seu presente pode mudar com apoio. Peça ajuda agora e com urgência.",
+        "Quando a mente dói muito, falar já é um respiro — ligue 188."
+      ],
+      depressao: [
+        "Sei que dói muito agora. Permita-se descansar e pedir ajuda.",
+        "A depressão não define você. Buscar ajuda é um passo gentil consigo.",
+        "Hoje pode ser pesado, mas há caminhos de cuidado e tratamento.",
+        "Reconhecer a dor é coragem — procure apoio profissional e próximo de você.",
+        "Pequenos passos de autocuidado importam: água, sono e falar com alguém.",
+        "Você não precisa carregar isso sozinho. Há profissionais que entendem.",
+        "A recuperação é possível; dê-se permissão para receber ajuda.",
+        "Mesmo sem forças, pedir ajuda é um ato de bravura.",
+        "Não ignore sua dor — ela pede atenção e cuidado especializado.",
+        "Compartilhar o que sente pode ser o começo da recuperação.",
+        "Aceitar apoio mostra força. Procure um psicólogo ou médico de confiança.",
+        "A cura pode ser gradual — celebre cada pequeno avanço.",
+        "Você merece cuidado humano e profissional. Comece pedindo ajuda.",
+        "Há tratamentos que ajudam. Você não está condenado a essa dor.",
+        "Sentir-se assim não é falha — é sinal de que você precisa de cuidado.",
+        "Procure um amigo, família ou serviço de saúde — fale com alguém hoje.",
+        "Mesmo que nada pareça funcionar ainda, continue buscando apoio.",
+        "Acolha-se com gentileza e dê tempo ao processo de cura.",
+        "Peça ajuda para criar um plano pequeno e factível de cuidados.",
+        "Você é valioso; a depressão não pode apagar seu valor.",
+        "Permita que alguém caminhe com você durante esse tempo difícil.",
+        "A mudança é possível com o suporte certo. Busque ajuda constante.",
+        "Medicação, terapia e suporte social ajudam — informe-se com um profissional.",
+        "Não espere que tudo melhore sozinho — inicie uma busca por ajuda.",
+        "Você já demonstrou coragem por estar aqui; continue pedindo suporte."
+      ],
+      ansiedade: [
+        "Respire devagar — inspire, segure, expire. Está tudo bem pedir ajuda.",
+        "Ansiedade é uma resposta intensa; com apoio você pode aprender a controlá-la.",
+        "Você não precisa enfrentar a ansiedade sozinho. Há técnicas e profissionais.",
+        "A calma pode ser re-treinada com práticas simples e apoio profissional.",
+        "Quando o coração acelera, pare por um momento e respire conscientemente.",
+        "Procure um profissional para aprender estratégias para crises de ansiedade.",
+        "Você não é fraco por sentir ansiedade — é humano. Peça ajuda.",
+        "Técnicas de respiração e terapia podem reduzir grande parte da angústia.",
+        "Identificar gatilhos é um passo importante — um terapeuta pode ajudar.",
+        "Permita-se pausar e cuidar. Estratégias simples ajudam no curto prazo.",
+        "Compartilhar o que sente com alguém de confiança já é um alívio.",
+        "Procure grupos de apoio ou terapia para lidar com a ansiedade.",
+        "Medicação pode ajudar em alguns casos — converse com um médico.",
+        "A sensação passa com práticas e suporte adequados. Busque orientação.",
+        "Respire e lembre-se: você não está sozinho nessa jornada.",
+        "Aceitar que precisa de ajuda é um passo de coragem, não de fraqueza.",
+        "Ferramentas práticas existem — peça orientação profissional.",
+        "A ansiedade não precisa dirigir sua vida; há caminhos para controle.",
+        "Fale sobre seus medos com alguém que te escute sem julgar.",
+        "Pequenas rotinas (sono, exercício) reduzem a intensidade dos sintomas.",
+        "Buscar ajuda precoce evita que a ansiedade se torne crônica.",
+        "Você pode aprender a reagir diferente — procure um especialista.",
+        "Respire, abrace a pausa e busque suporte profissional.",
+        "Há técnicas imediatas para crises — procure um profissional para aprender mais."
+      ],
+      solidao: [
+        "Você importa e merece ser ouvido. Procure falar com alguém hoje.",
+        "Estar sozinho não significa que você está sozinho para sempre.",
+        "Peça uma ligação a um amigo ou serviço de apoio — conexão cura.",
+        "Procure grupos, igrejas, ONGs locais — há redes de acolhimento.",
+        "Abrir seu coração para alguém é um passo de coragem e cura.",
+        "Mesmo pequenas conexões diárias podem diminuir a solidão.",
+        "Você não precisa carregar a dor de solidão sozinho.",
+        "Buscar ajuda profissional também é uma forma de encontrar companhia terapêutica.",
+        "Compartilhe um pouco do que sente — alguém pode estar esperando para ajudar.",
+        "Participar de atividades locais pode criar laços aos poucos.",
+        "Acolher-se e pedir companhia é um gesto de amor próprio.",
+        "A solidão não é sua identidade — ela é uma experiência que pode mudar.",
+        "Permita-se receber convites e sinais de cuidado dos outros.",
+        "Procure apoio comunitário; muitos se sentem como você e se conectam.",
+        "Você pode encontrar compreensão em terapeutas e grupos de apoio.",
+        "Tente uma pequena ação social hoje: uma ligação, uma mensagem.",
+        "Mesmo que pareça difícil, tente se abrir com alguém de confiança.",
+        "A presença de outro ser humano pode suavizar a dor profunda.",
+        "Invista em pequenas rotinas sociais — elas constroem conexões reais.",
+        "Você merece presença e cuidado — busque ativamente apoio.",
+        "Não espere que a solidão acabe sozinha — inicie passos para mudar.",
+        "Você não é esquecido — peça ajuda e permita que outros ajudem.",
+        "Acolher-se e aceitar ajuda é coragem. Procure apoio local.",
+        "Construir novas conexões leva tempo, mas cada passo conta."
+      ],
+      traicao: [
+        "Sinto muito pela dor que a traição causou — sua reação é compreensível.",
+        "Coração partido dói — permita-se chorar e buscar apoio.",
+        "Procure amigos e terapia para processar essa perda e reconstruir-se.",
+        "A traição não define seu valor; você merece amor e respeito.",
+        "Reconhecer a dor é o primeiro passo para a cura emocional.",
+        "Permita-se tempo para se curar — a pressa não ajuda o coração ferido.",
+        "Há caminhos para reconstrução após traição; busque orientação especializada.",
+        "Fale sobre seus sentimentos com alguém que possa ouvir sem julgar.",
+        "Você pode aprender com a dor e reconstruir sua história.",
+        "Acolher a própria vulnerabilidade é sinal de força.",
+        "Procure apoio profissional para traumas afetivos e autoestima abalada.",
+        "Reconectar-se consigo mesmo é essencial após uma decepção amorosa.",
+        "Permita-se reconstruir limites e saúde emocional.",
+        "Você merece relacionamentos respeitosos e seguros no futuro.",
+        "A dor da traição diminui com tempo e apoio adequado.",
+        "Procure estratégias práticas para lidar com ciúme e culpa.",
+        "Você não precisa carregar a solidão dessa dor — peça ajuda.",
+        "Apoio terapêutico ajuda a ressignificar o sofrimento.",
+        "Dê pequenos passos para cuidar de si e de suas emoções.",
+        "Perdoar (se quiser) é um processo — não se apresse.",
+        "Busque companhia que respeite seu processo de cura.",
+        "Reafirme seu valor: você é digno de amor sincero.",
+        "Fortaleça sua rede de apoio e escolha quem merece sua confiança.",
+        "Permita-se sonhar com novos começos quando estiver pronto."
+      ],
+      desespero: [
+        "Quando tudo parece sem saída, peça ajuda — há alternativas.",
+        "Focar em um pequeno próximo passo ajuda a diminuir o desespero.",
+        "Você não precisa resolver tudo de uma vez — comece com algo simples.",
+        "Compartilhar sua situação pode abrir portas para soluções práticas.",
+        "Procure serviços sociais e profissionais que podem ajudar concretamente.",
+        "Se sentir sufocado, faça uma pausa e procure se acalmar. Busque ajuda.",
+        "O desespero é intenso, mas temporário. Peça suporte imediato.",
+        "Dividir sua carga com alguém já é um passo poderoso.",
+        "Técnicas de cuidado diário ajudam a estabilizar os dias difíceis.",
+        "Procure orientação profissional para criar um plano realista.",
+        "Você merece suporte prático e emocional — busque ambos.",
+        "Explorar recursos locais pode trazer soluções rápidas.",
+        "Pequenas ações contínuas geram mudanças ao longo do tempo.",
+        "Se a pressão aumenta, procure ajuda urgente — fale com alguém agora.",
+        "Acolher seus sentimentos permite clarear próximos passos.",
+        "Não menospreze seu sofrimento — busque intervenções práticas.",
+        "Há profissionais que ajudam a organizar a crise em etapas.",
+        "Permita-se pedir socorro: isso é sinal de maturidade e coragem.",
+        "Procure redes sociais e serviços locais que atuem em crise.",
+        "A esperança pode surgir com apoio e ações concretas.",
+        "Mesmo em caos, um pequeno plano pode trazer alívio imediato.",
+        "Busque suporte que une assistência emocional e prática.",
+        "Você não precisa enfrentar tudo sozinho — peça ajuda."
+      ]
+    },
+    verses: {
+      suicidio: [
+        "Salmo 34:18 — O Senhor está perto dos que têm o coração quebrantado.",
+        "Salmo 23:4 — Ainda que eu ande pelo vale da sombra da morte, não temerei mal algum; tu estás comigo.",
+        "Isaías 41:10 — Não temas, porque eu sou contigo; não te assombres, porque eu sou teu Deus.",
+        "Mateus 11:28 — Vinde a mim os cansados e eu vos aliviarei.",
+        "Jeremias 29:11 — Eu sei os planos que tenho para vós, diz o Senhor, planos de fazê-los prosperar e não de lhes causar dano.",
+        "Salmo 42:11 — Por que você está assim tão triste, ó minha alma? Ponha a sua esperança em Deus.",
+        "Filipenses 4:13 — Tudo posso naquele que me fortalece.",
+        "Salmo 145:18 — O Senhor está perto de todos os que o invocam.",
+        "Lamentações 3:21 — Todavia, lembro-me também do que me pode dar esperança.",
+        "Salmo 55:22 — Entregue suas preocupações ao Senhor, e ele o sustentará.",
+      ],
+      depressao: [
+        "Salmo 30:5 — O choro pode durar uma noite, mas a alegria vem pela manhã.",
+        "Isaías 40:31 — Mas aqueles que esperam no Senhor renovam as suas forças.",
+        "Salmo 42:5 — Por que você está assim tão triste, ó minha alma? Ponha a sua esperança em Deus.",
+        "Mateus 11:28 — Vinde a mim os cansados e eu vos aliviarei.",
+        "Romanos 15:13 — Que o Deus da esperança os encha de toda alegria e paz.",
+        "2 Coríntios 4:16 — Por isso não desanimamos.",
+        "Salmo 73:26 — A minha carne e o meu coração desfalecem; mas Deus é a fortaleza do meu coração.",
+        "Salmo 130:5 — Espero no Senhor com todo o meu ser.",
+        "Filipenses 4:6-7 — Não andeis ansiosos por coisa alguma; antes em tudo...",
+        "Hebreus 4:16 — Assim, aproximemo-nos do trono da graça com toda a confiança.",
+      ],
+      ansiedade: [
+        "1 Pedro 5:7 — Lancem sobre ele toda a sua ansiedade, porque ele tem cuidado de vocês.",
+        "Filipenses 4:6 — Não andeis ansiosos por coisa alguma.",
+        "Salmo 56:3 — Quando eu estiver com medo, confiarei em ti.",
+        "Isaías 41:10 — Não temas, porque eu sou contigo; não te assombres.",
+        "João 14:27 — Deixo-vos a paz, a minha paz vos dou.",
+        "Mateus 6:34 — Portanto, não se preocupem com o amanhã.",
+        "Salmo 4:8 — Em paz me deito e logo durmo.",
+        "Provérbios 12:25 — A ansiedade no coração deixa o homem abatido.",
+        "Salmo 94:19 — Quando a ansiedade já me dominava no íntimo, o teu consolo me trouxe alívio.",
+        "Salmo 27:1 — O Senhor é a minha luz e a minha salvação; de quem terei medo?",
+      ],
+      solidao: [
+        "Hebreus 13:5 — Nunca o deixarei, nunca o abandonarei.",
+        "Deuteronômio 31:6 — O Senhor mesmo irá à sua frente e estará com você.",
+        "Salmo 27:10 — Ainda que me abandonem pai e mãe, o Senhor me acolherá.",
+        "Salmo 68:5 — Pai para os órfãos e defensor das viúvas.",
+        "Mateus 28:20 — E eu estarei sempre com vocês, até o fim dos tempos.",
+        "Salmo 142:4 — Ninguém se importa comigo.",
+        "Isaías 49:15 — Eu jamais me esquecerei de você!",
+        "Salmo 23:4 — Tu estás comigo.",
+        "Isaías 43:1 — Não tenha medo, pois eu o resgatei; eu o chamei pelo nome; você é meu.",
+        "Salmo 139:7-8 — Para onde poderei fugir da tua presença?",
+      ],
+      traicao: [
+        "Salmo 34:18 — O Senhor está perto dos que têm o coração quebrantado.",
+        "Salmo 147:3 — Ele cura os de coração quebrantado e cuida das suas feridas.",
+        "Salmo 55:22 — Entregue suas preocupações ao Senhor, e ele o sustentará.",
+        "Filipenses 3:13-14 — Esquecendo-me das coisas que ficaram para trás e avançando.",
+        "Isaías 61:1 — Enviou-me a curar os que têm o coração quebrado.",
+        "Romanos 8:28 — Deus faz com que todas as coisas cooperem para o bem de quem o ama.",
+        "Salmo 9:9 — O Senhor é um refúgio para os oprimidos.",
+        "Jeremias 30:17 — Eu farei cicatrizar o seu ferimento.",
+        "Salmo 18:2 — O Senhor é a minha rocha, a minha fortaleza e o meu libertador.",
+        "1 Coríntios 13:7 — O amor tudo sofre, tudo crê, tudo espera, tudo suporta.",
+      ],
+      desespero: [
+        "Salmo 46:1 — Deus é o nosso refúgio e a nossa fortaleza, auxílio sempre presente na adversidade.",
+        "Mateus 6:34 — Portanto, não se preocupem com o amanhã.",
+        "Isaías 43:2 — Quando você atravessar as águas, eu estarei com você.",
+        "Romanos 15:13 — Que o Deus da esperança os encha de toda alegria e paz.",
+        "Salmo 91:4 — Ele o cobrirá com as suas penas, e sob as suas asas você encontrará refúgio.",
+        "Salmo 13:5 — Eu, porém, confio em teu amor.",
+        "João 16:33 — Neste mundo vocês terão aflições; mas tenham bom ânimo, eu venci o mundo.",
+        "Salmo 121:1-2 — De onde me virá o socorro? O meu socorro vem do Senhor.",
+        "Lamentações 3:22-23 — O seu amor não tem fim! Sua fidelidade é grande demais! Novas são cada manhã.",
+        "Salmo 31:24 — Sejam fortes e corajosos, todos vocês que esperam no Senhor!",
+      ]
+    },
+    frasesIniciais: [
+      "Deus conhece a sua dor — e Ele caminha com você agora.",
+      "Ainda que cansado, você segue sendo amado por Deus.",
+      "Nada está perdido para Aquele que faz novas todas as coisas.",
+      "Quando falta a força, Deus sustenta com Suas mãos.",
+      "Sua vida tem valor — muito mais do que você imagina.",
+      "Deus está perto dos quebrantados de coração.",
+      "A esperança não morreu — Deus segue escrevendo a sua história.",
+      "Você não está sozinho. Deus está com você.",
+      "O amor de Deus te envolve mesmo quando tudo dói.",
+      "Deus cuida de você mesmo em dias em que não O sente.",
+      "A paz que você busca existe — e Deus pode te dar.",
+      "Deus te vê, te ouve e te entende.",
+      "Há descanso para a sua alma cansada — Deus promete.",
+      "Quando você não sabe como orar, Deus ainda te sustenta.",
+      "Você não é um erro; é uma obra de Deus com propósito.",
+      "Deus é a sua força na hora da fraqueza.",
+      "Você é mais corajoso do que pensa.",
+      "Deus está no seu amanhã, mesmo que você não o veja.",
+      "Hoje pode ser difícil, mas Deus prometeu que não estará sozinho.",
+      "O coração cansado também é amado e cuidado.",
+      "Um novo começo é possível — Deus abre portas onde não parecem existir."
+    ]
+  },
+  en: {
+    messages: {
+      suicidio: [
+        "I am here with you. Your life matters greatly and deserves care.",
+        "Even in the darkness, there is help and people who care. Reach out now.",
+        "If you are thinking of self-harm, call the Crisis Line (e.g., 988) — speak to someone now.",
+        "Your pain is real, but we can find ways to ease it. You are not alone.",
+        "Breathe. Let's take one step at a time — seeking help is courage.",
+        "You are important. Even if it feels heavy now, you are not alone.",
+        "You don't have to deal with this alone. Sharing is an act of bravery.",
+        "There are professionals ready to listen without judgment. Seek support.",
+        "Your story has value. Find someone who can help you keep going.",
+        "Holding the pain alone increases the weight. Please, ask for help now.",
+        "Many people find a way out with support. You don't have to give up.",
+        "If you are in danger, contact emergency services or a crisis line immediately.",
+        "You deserve care and kindness — seek professional help now.",
+        "Know that asking for help is not weakness; it's the first step to healing.",
+        "You matter to someone, even if you can't see it today. Talk to someone.",
+        "When the pain is great, quick action can save a life. Seek support.",
+        "Talking about it can lessen the burden. Take a step and call someone.",
+        "Small steps save lives — share what you feel with a trusted person.",
+        "Don't wait if the feeling of danger increases. Seek immediate help.",
+        "There are support lines and services that want to hear you — use them now.",
+        "Your suffering deserves immediate attention. Seek an emergency service.",
+        "You are more than your thoughts — seek human comfort now.",
+        "Allow yourself to ask for help; there are professionals who understand and welcome you.",
+        "Your present can change with support. Ask for help now and urgently.",
+        "When the mind hurts too much, speaking is already a breath — call 988 or equivalent.",
+      ],
+      depressao: [
+        "I know it hurts deeply now. Allow yourself to rest and ask for help.",
+        "Depression does not define you. Seeking help is a kind step toward yourself.",
+        "Today might be heavy, but there are paths to care and treatment.",
+        "Recognizing the pain is courage — seek professional and nearby support.",
+        "Small steps of self-care matter: water, sleep, and talking to someone.",
+        "You don't have to carry this alone. There are professionals who understand.",
+        "Recovery is possible; give yourself permission to receive help.",
+        "Even without strength, asking for help is an act of bravery.",
+        "Don't ignore your pain — it demands specialized attention and care.",
+        "Sharing how you feel can be the beginning of recovery.",
+        "Accepting support shows strength. Seek a trusted psychologist or doctor.",
+        "Healing can be gradual — celebrate every small step forward.",
+        "You deserve human and professional care. Start by asking for help.",
+        "There are treatments that help. You are not condemned to this pain.",
+        "Feeling this way is not a flaw — it's a sign that you need care.",
+        "Reach out to a friend, family, or health service — talk to someone today.",
+        "Even if nothing seems to be working yet, keep seeking support.",
+        "Embrace yourself gently and give time to the healing process.",
+        "Ask for help to create a small, doable care plan.",
+        "You are valuable; depression cannot erase your worth.",
+        "Allow someone to walk with you during this difficult time.",
+        "Change is possible with the right support. Seek constant help.",
+        "Medication, therapy, and social support help — consult a professional.",
+        "Don't wait for everything to get better on its own — start a search for help.",
+        "You have already shown courage by being here; continue seeking support.",
+      ],
+      ansiedade: [
+        "Breathe slowly — inhale, hold, exhale. It's okay to ask for help.",
+        "Anxiety is an intense response; with support, you can learn to control it.",
+        "You don't have to face anxiety alone. There are techniques and professionals.",
+        "Calmness can be retrained with simple practices and professional support.",
+        "When your heart races, pause for a moment and breathe consciously.",
+        "Seek a professional to learn strategies for anxiety attacks.",
+        "You are not weak for feeling anxiety — you are human. Ask for help.",
+        "Breathing techniques and therapy can greatly reduce anguish.",
+        "Identifying triggers is an important step — a therapist can help.",
+        "Allow yourself to pause and take care. Simple strategies help in the short term.",
+        "Sharing what you feel with someone you trust is already a relief.",
+        "Seek support groups or therapy to cope with anxiety.",
+        "Medication can help in some cases — talk to a doctor.",
+        "The feeling passes with adequate practices and support. Seek guidance.",
+        "Breathe and remember: you are not alone on this journey.",
+        "Accepting that you need help is a step of courage, not weakness.",
+        "Practical tools exist — ask for professional guidance.",
+        "Anxiety doesn't have to run your life; there are paths to control.",
+        "Talk about your fears with someone who listens without judgment.",
+        "Small routines (sleep, exercise) reduce the intensity of symptoms.",
+        "Seeking early help prevents anxiety from becoming chronic.",
+        "You can learn to react differently — seek a specialist.",
+        "Breathe, embrace the pause, and seek professional support.",
+        "There are immediate techniques for crises — ask a professional to learn more.",
+      ],
+      solidao: [
+        "You matter and deserve to be heard. Reach out to someone today.",
+        "Being alone doesn't mean you are alone forever.",
+        "Ask a friend or support service for a call — connection heals.",
+        "Look for local groups, churches, NGOs — there are networks of comfort.",
+        "Opening your heart to someone is a step of courage and healing.",
+        "Even small daily connections can lessen loneliness.",
+        "You don't have to carry the pain of loneliness alone.",
+        "Seeking professional help is also a way to find therapeutic company.",
+        "Share a little of what you feel — someone might be waiting to help.",
+        "Participating in local activities can build bonds gradually.",
+        "Embracing yourself and asking for company is an act of self-love.",
+        "Loneliness is not your identity — it's an experience that can change.",
+        "Allow yourself to receive invitations and signs of care from others.",
+        "Seek community support; many feel as you do and connect.",
+        "You can find understanding in therapists and support groups.",
+        "Try a small social action today: a call, a message.",
+        "Even if it seems hard, try opening up to someone you trust.",
+        "The presence of another human being can soften deep pain.",
+        "Invest in small social routines — they build real connections.",
+        "You deserve presence and care — actively seek support.",
+        "Don't wait for loneliness to end on its own — start steps to change.",
+        "You are not forgotten — ask for help and allow others to help.",
+        "Embracing yourself and accepting help is courage. Seek local support.",
+        "Building new connections takes time, but every step counts."
+      ],
+      traicao: [
+        "I am sorry for the pain betrayal caused — your reaction is understandable.",
+        "A broken heart hurts — allow yourself to mourn and seek support.",
+        "Seek friends and therapy to process this loss and rebuild yourself.",
+        "Betrayal does not define your worth; you deserve love and respect.",
+        "Recognizing the pain is the first step toward emotional healing.",
+        "Allow yourself time to heal — haste doesn't help a wounded heart.",
+        "There are paths to rebuilding after betrayal; seek specialized guidance.",
+        "Talk about your feelings with someone who can listen without judgment.",
+        "You can learn from the pain and rebuild your story.",
+        "Embracing your own vulnerability is a sign of strength.",
+        "Seek professional support for affective trauma and shaken self-esteem.",
+        "Reconnecting with yourself is essential after a romantic disappointment.",
+        "Allow yourself to rebuild boundaries and emotional health.",
+        "You deserve respectful and safe relationships in the future.",
+        "The pain of betrayal lessens with time and adequate support.",
+        "Seek practical strategies to deal with jealousy and guilt.",
+        "You don't have to carry the loneliness of this pain — ask for help.",
+        "Therapeutic support helps reframe suffering.",
+        "Take small steps to care for yourself and your emotions.",
+        "Forgiving (if you choose to) is a process — don't rush it.",
+        "Seek company that respects your healing process.",
+        "Reaffirm your worth: you are worthy of sincere love.",
+        "Strengthen your support network and choose who deserves your trust.",
+        "Allow yourself to dream of new beginnings when you are ready."
+      ],
+      desespero: [
+        "When everything seems hopeless, ask for help — there are alternatives.",
+        "Focusing on a small next step helps reduce despair.",
+        "You don't need to solve everything at once — start with something simple.",
+        "Sharing your situation can open doors to practical solutions.",
+        "Seek social services and professionals who can provide concrete help.",
+        "If you feel overwhelmed, take a break and try to calm down. Seek help.",
+        "Despair is intense, but temporary. Ask for immediate support.",
+        "Dividing your burden with someone is already a powerful step.",
+        "Daily care techniques help stabilize difficult days.",
+        "Seek professional guidance to create a realistic plan.",
+        "You deserve practical and emotional support — seek both.",
+        "Exploring local resources can bring quick solutions.",
+        "Small continuous actions generate changes over time.",
+        "If the pressure increases, seek urgent help — talk to someone now.",
+        "Acknowledging your feelings allows for clearer next steps.",
+        "Don't minimize your suffering — seek practical interventions.",
+        "There are professionals who help organize the crisis into stages.",
+        "Allow yourself to call for help: this is a sign of maturity and courage.",
+        "Seek social networks and local services that deal with crises.",
+        "Hope can emerge with support and concrete actions.",
+        "Even in chaos, a small plan can bring immediate relief.",
+        "Seek support that combines emotional and practical assistance.",
+        "You don't have to face everything alone — ask for help."
+      ]
+    },
+    verses: {
+      suicidio: [
+        "Psalm 34:18 — The Lord is close to the brokenhearted.",
+        "Psalm 23:4 — Even though I walk through the valley of the shadow of death, I will fear no evil, for you are with me.",
+        "Isaiah 41:10 — So do not fear, for I am with you; do not be dismayed, for I am your God.",
+        "Matthew 11:28 — Come to me, all you who are weary, and I will give you rest.",
+        "Jeremiah 29:11 — For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you.",
+        "Psalm 42:11 — Why, my soul, are you downcast? Put your hope in God.",
+        "Philippians 4:13 — I can do all things through him who gives me strength.",
+        "Psalm 145:18 — The Lord is near to all who call on him.",
+        "Lamentations 3:21 — Yet this I call to mind and therefore I have hope.",
+        "Psalm 55:22 — Cast your cares on the Lord and he will sustain you.",
+      ],
+      depressao: [
+        "Psalm 30:5 — Weeping may stay for the night, but rejoicing comes in the morning.",
+        "Isaiah 40:31 — But those who hope in the LORD will renew their strength.",
+        "Psalm 42:5 — Why, my soul, are you downcast? Put your hope in God.",
+        "Matthew 11:28 — Come to me, all you who are weary, and I will give you rest.",
+        "Romans 15:13 — May the God of hope fill you with all joy and peace.",
+        "2 Corinthians 4:16 — Therefore we do not lose heart.",
+        "Psalm 73:26 — My flesh and my heart may fail, but God is the strength of my heart.",
+        "Psalm 130:5 — I wait for the Lord, my whole being waits.",
+        "Philippians 4:6-7 — Do not be anxious about anything, but in every situation... and the peace of God will guard your hearts.",
+        "Hebrews 4:16 — Let us then approach God’s throne of grace with confidence.",
+      ],
+      ansiedade: [
+        "1 Peter 5:7 — Cast all your anxiety on him because he cares for you.",
+        "Philippians 4:6 — Do not be anxious about anything.",
+        "Psalm 56:3 — When I am afraid, I put my trust in you.",
+        "Isaiah 41:10 — So do not fear, for I am with you; do not be dismayed.",
+        "John 14:27 — Peace I leave with you; my peace I give you.",
+        "Matthew 6:34 — Therefore do not worry about tomorrow.",
+        "Psalm 4:8 — I will lie down and sleep in peace.",
+        "Proverbs 12:25 — Anxiety weighs down the heart.",
+        "Psalm 94:19 — When anxiety was great within me, your consolation brought me joy.",
+        "Psalm 27:1 — The Lord is my light and my salvation—whom shall I fear?",
+      ],
+      solidao: [
+        "Hebrews 13:5 — Never will I leave you; never will I forsake you.",
+        "Deuteronomy 31:6 — The Lord himself goes before you and will be with you.",
+        "Psalm 27:10 — Though my father and mother forsake me, the Lord will receive me.",
+        "Psalm 68:5 — A father to the fatherless, a defender of widows.",
+        "Matthew 28:20 — And surely I am with you always, to the very end of the age.",
+        "Psalm 142:4 — No one is concerned for me.",
+        "Isaiah 49:15 — I will not forget you!",
+        "Psalm 23:4 — You are with me.",
+        "Isaiah 43:1 — Do not fear, for I have redeemed you; I have summoned you by name; you are mine.",
+        "Psalm 139:7-8 — Where can I go from your Spirit? Where can I flee from your presence?",
+      ],
+      traicao: [
+        "Psalm 34:18 — The Lord is close to the brokenhearted.",
+        "Psalm 147:3 — He heals the brokenhearted and binds up their wounds.",
+        "Psalm 55:22 — Cast your cares on the Lord and he will sustain you.",
+        "Philippians 3:13-14 — Forgetting what is behind and straining toward what is ahead.",
+        "Isaiah 61:1 — He has sent me to bind up the brokenhearted.",
+        "Romans 8:28 — God works for the good of those who love him.",
+        "Psalm 9:9 — The Lord is a refuge for the oppressed.",
+        "Jeremiah 30:17 — But I will restore you to health and heal your wounds.",
+        "Psalm 18:2 — The Lord is my rock, my fortress and my deliverer.",
+        "1 Corinthians 13:7 — Love always protects, always trusts, always hopes, always perseveres.",
+      ],
+      desespero: [
+        "Psalm 46:1 — God is our refuge and strength, an ever-present help in trouble.",
+        "Matthew 6:34 — Therefore do not worry about tomorrow.",
+        "Isaiah 43:2 — When you pass through the waters, I will be with you.",
+        "Romans 15:13 — May the God of hope fill you with all joy and peace.",
+        "Psalm 91:4 — He will cover you with his feathers, and under his wings you will find refuge.",
+        "Psalm 13:5 — But I trust in your unfailing love.",
+        "John 16:33 — In this world you will have trouble. But take heart! I have overcome the world.",
+        "Psalm 121:1-2 — Where does my help come from? My help comes from the Lord.",
+        "Lamentations 3:22-23 — His compassions never fail! They are new every morning.",
+        "Psalm 31:24 — Be strong and take heart, all you who hope in the Lord.",
+      ]
+    },
+    frasesIniciais: [
+      "God knows your pain — and He walks with you now.",
+      "Though weary, you are still loved by God.",
+      "Nothing is lost for the One who makes all things new.",
+      "When strength fails, God sustains with His hands.",
+      "Your life has value — much more than you imagine.",
+      "God is near to the brokenhearted.",
+      "Hope has not died — God is still writing your story.",
+      "You are not alone. God is with you.",
+      "God's love surrounds you even when everything hurts.",
+      "God cares for you even on days you don't feel Him.",
+      "The peace you seek exists — and God can give it to you.",
+      "God sees you, hears you, and understands you.",
+      "There is rest for your weary soul — God promises it.",
+      "When you don't know how to pray, God still sustains you.",
+      "You are not a mistake; you are a work of God with purpose.",
+      "God is your strength in the hour of weakness.",
+      "You are braver than you think.",
+      "God is in your tomorrow, even if you can't see it.",
+      "Today might be hard, but God promised you won't be alone.",
+      "The weary heart is also loved and cared for.",
+      "A new beginning is possible — God opens doors where there seem to be none."
+    ]
+  },
+  es: {
+    messages: {
+      suicidio: [
+        "Estoy aquí contigo. Tu vida importa mucho y merece ser cuidada.",
+        "Aun en la oscuridad, existe ayuda y personas que se preocupan. Búscala ahora.",
+        "Si piensas en hacerte daño, llama a la línea de crisis (ej. 988 o 112) — habla con alguien ya.",
+        "Tu dolor es real, pero podemos buscar formas de aliviarlo. No estás solo.",
+        "Respira. Daremos un paso a la vez — buscar ayuda es un acto de valentía.",
+        "Eres importante. Aunque parezca pesado ahora, no estás solo.",
+        "No tienes que lidiar con esto solo. Compartir es un acto de coraje.",
+        "Hay profesionales listos para escuchar sin juzgar. Busca apoyo.",
+        "Tu historia tiene valor. Busca a alguien que te ayude a continuar.",
+        "Sostener el dolor solo aumenta la carga. Pide ayuda ahora, por favor.",
+        "Muchas personas encuentran salida con apoyo. No tienes por qué rendirte.",
+        "Si estás en peligro, contacta a los servicios de emergencia o una línea de crisis de inmediato.",
+        "Mereces cuidado y cariño — busca ayuda profesional ahora.",
+        "Pedir ayuda no es debilidad; es el primer paso para sanar.",
+        "Importas a alguien, aunque hoy no puedas verlo. Habla con alguien.",
+        "Cuando el dolor es grande, actuar rápido puede salvar una vida. Busca apoyo.",
+        "Hablar de ello puede disminuir la carga. Da un paso y llama a alguien.",
+        "Pequeños pasos salvan — comparte lo que sientes con una persona de confianza.",
+        "No esperes si la sensación de peligro aumenta. Busca ayuda inmediata.",
+        "Hay líneas de apoyo y servicios que quieren escucharte — úsalos ahora.",
+        "Tu sufrimiento merece atención inmediata. Busca un servicio de emergencia.",
+        "Eres más que tus pensamientos — busca amparo humano ahora.",
+        "Permítete pedir ayuda; existen profesionales que entienden y acogen.",
+        "Tu presente puede cambiar con apoyo. Pide ayuda ahora y con urgencia.",
+        "Cuando la mente duele mucho, hablar ya es un respiro — llama a tu línea de crisis.",
+      ],
+      depressao: [
+        "Sé que duele mucho ahora. Permítete descansar y pedir ayuda.",
+        "La depresión no te define. Buscar ayuda es un paso gentil contigo.",
+        "Hoy puede ser pesado, pero hay caminos de cuidado y tratamiento.",
+        "Reconocer el dolor es valentía — busca apoyo profesional y cercano.",
+        "Pequeños pasos de autocuidado importan: agua, sueño y hablar con alguien.",
+        "No tienes que cargar esto solo. Hay profesionales que entienden.",
+        "La recuperación es posible; date permiso para recibir ayuda.",
+        "Aun sin fuerzas, pedir ayuda es un acto de bravura.",
+        "No ignores tu dolor — pide atención y cuidado especializado.",
+        "Compartir lo que sientes puede ser el inicio de la recuperación.",
+        "Aceptar apoyo muestra fuerza. Busca un psicólogo o médico de confianza.",
+        "La sanación puede ser gradual — celebra cada pequeño avance.",
+        "Mereces cuidado humano y profesional. Comienza pidiendo ayuda.",
+        "Hay tratamientos que ayudan. No estás condenado a este dolor.",
+        "Sentirte así no es un fallo — es señal de que necesitas cuidado.",
+        "Busca a un amigo, familia o servicio de salud — habla con alguien hoy.",
+        "Aunque nada parezca funcionar aún, sigue buscando apoyo.",
+        "Acógete con gentileza y dale tiempo al proceso de sanación.",
+        "Pide ayuda para crear un plan de cuidado pequeño y factible.",
+        "Eres valioso; la depresión no puede borrar tu valor.",
+        "Permite que alguien camine contigo durante este tiempo difícil.",
+        "El cambio es posible con el soporte adecuado. Busca ayuda constante.",
+        "Medicación, terapia y soporte social ayudan — infórmate con un profesional.",
+        "No esperes que todo mejore solo — inicia una búsqueda de ayuda.",
+        "Ya demostraste coraje al estar aquí; continúa pidiendo soporte."
+      ],
+      ansiedade: [
+        "Respira despacio — inhala, sostén, exhala. Está bien pedir ayuda.",
+        "La ansiedad es una respuesta intensa; con apoyo puedes aprender a controlarla.",
+        "No necesitas enfrentar la ansiedad solo. Hay técnicas y profesionales.",
+        "La calma puede ser re-entrenada con prácticas simples y apoyo profesional.",
+        "Cuando el corazón se acelera, detente un momento y respira conscientemente.",
+        "Busca un profesional para aprender estrategias para crisis de ansiedad.",
+        "No eres débil por sentir ansiedad — eres humano. Pide ayuda.",
+        "Técnicas de respiración y terapia pueden reducir gran parte de la angustia.",
+        "Identificar detonantes es un paso importante — un terapeuta puede ayudarte.",
+        "Permítete hacer una pausa y cuidar. Estrategias simples ayudan a corto plazo.",
+        "Compartir lo que sientes con alguien de confianza ya es un alivio.",
+        "Busca grupos de apoyo o terapia para lidiar con la ansiedad.",
+        "La medicación puede ayudar en algunos casos — habla con un médico.",
+        "La sensación pasa con prácticas y soporte adecuados. Busca orientación.",
+        "Respira y recuerda: no estás solo en este camino.",
+        "Aceptar que necesitas ayuda es un paso de coraje, no de debilidad.",
+        "Existen herramientas prácticas — pide orientación profesional.",
+        "La ansiedad no necesita dirigir tu vida; hay caminos para controlarla.",
+        "Habla de tus miedos con alguien que te escuche sin juzgar.",
+        "Pequeñas rutinas (sueño, ejercicio) reducen la intensidad de los síntomas.",
+        "Buscar ayuda precoz evita que la ansiedad se vuelva crónica.",
+        "Puedes aprender a reaccionar diferente — busca un especialista.",
+        "Respira, abraza la pausa y busca soporte profesional.",
+        "Hay técnicas inmediatas para crisis — busca un profesional para aprender más."
+      ],
+      solidao: [
+        "Importas y mereces ser escuchado. Busca hablar con alguien hoy.",
+        "Estar solo no significa que estarás solo para siempre.",
+        "Pide una llamada a un amigo o servicio de apoyo — la conexión sana.",
+        "Busca grupos, iglesias, ONGs locales — hay redes de acogida.",
+        "Abrir tu corazón a alguien es un paso de coraje y sanación.",
+        "Incluso pequeñas conexiones diarias pueden disminuir la soledad.",
+        "No tienes que cargar el dolor de la soledad solo.",
+        "Buscar ayuda profesional también es una forma de encontrar compañía terapéutica.",
+        "Comparte un poco de lo que sientes — alguien puede estar esperando para ayudar.",
+        "Participar en actividades locales puede crear lazos poco a poco.",
+        "Acogerse y pedir compañía es un gesto de amor propio.",
+        "La soledad no es tu identidad — es una experiencia que puede cambiar.",
+        "Permítete recibir invitaciones y señales de cuidado de los demás.",
+        "Busca apoyo comunitario; muchos se sienten como tú y se conectan.",
+        "Puedes encontrar comprensión en terapeutas y grupos de apoyo.",
+        "Intenta una pequeña acción social hoy: una llamada, un mensaje.",
+        "Aunque parezca difícil, intenta abrirte con alguien de confianza.",
+        "La presencia de otro ser humano puede suavizar el dolor profundo.",
+        "Invierte en pequeñas rutinas sociales — construyen conexiones reales.",
+        "Mereces presencia y cuidado — busca activamente apoyo.",
+        "No esperes que la soledad termine sola — inicia pasos para cambiar.",
+        "No estás olvidado — pide ayuda y permite que otros te ayuden.",
+        "Acogerse y aceptar ayuda es coraje. Busca apoyo local.",
+        "Construir nuevas conexiones lleva tiempo, pero cada paso cuenta."
+      ],
+      traicao: [
+        "Lamento el dolor que causó la traición — tu reacción es comprensible.",
+        "Un corazón roto duele — permítete llorar y buscar apoyo.",
+        "Busca amigos y terapia para procesar esta pérdida y reconstruirte.",
+        "La traición no define tu valor; mereces amor y respeto.",
+        "Reconocer el dolor es el primer paso hacia la sanación emocional.",
+        "Permítete tiempo para sanar — la prisa no ayuda al corazón herido.",
+        "Hay caminos para la reconstrucción después de la traición; busca orientación especializada.",
+        "Habla de tus sentimientos con alguien que pueda escuchar sin juzgar.",
+        "Puedes aprender del dolor y reconstruir tu historia.",
+        "Acoger la propia vulnerabilidad es señal de fuerza.",
+        "Busca apoyo profesional para traumas afectivos y autoestima afectada.",
+        "Reconectarte contigo mismo es esencial después de una decepción amorosa.",
+        "Permítete reconstruir límites y salud emocional.",
+        "Mereces relaciones respetuosas y seguras en el futuro.",
+        "El dolor de la traición disminuye con tiempo y apoyo adecuado.",
+        "Busca estrategias prácticas para lidiar con los celos y la culpa.",
+        "No tienes que cargar la soledad de este dolor — pide ayuda.",
+        "El apoyo terapéutico ayuda a resignificar el sufrimiento.",
+        "Da pequeños pasos para cuidar de ti y de tus emociones.",
+        "Perdonar (si lo deseas) es un proceso — no te apresures.",
+        "Busca compañía que respete tu proceso de sanación.",
+        "Reafirma tu valor: eres digno de amor sincero.",
+        "Fortalece tu red de apoyo y elige quién merece tu confianza.",
+        "Permítete soñar con nuevos comienzos cuando estés listo."
+      ],
+      desespero: [
+        "Cuando todo parece sin salida, pide ayuda — hay alternativas.",
+        "Enfocarte en un pequeño próximo paso ayuda a disminuir el desespero.",
+        "No necesitas resolverlo todo de una vez — comienza con algo simple.",
+        "Compartir tu situación puede abrir puertas a soluciones prácticas.",
+        "Busca servicios sociales y profesionales que pueden ayudar concretamente.",
+        "Si te sientes asfixiado, toma una pausa y busca calmarte. Pide ayuda.",
+        "El desespero es intenso, pero temporal. Pide soporte inmediato.",
+        "Dividir tu carga con alguien ya es un paso poderoso.",
+        "Técnicas de cuidado diario ayudan a estabilizar los días difíciles.",
+        "Busca orientación profesional para crear un plan realista.",
+        "Mereces soporte práctico y emocional — busca ambos.",
+        "Explorar recursos locales puede traer soluciones rápidas.",
+        "Pequeñas acciones continuas generan cambios a lo largo del tiempo.",
+        "Si la presión aumenta, busca ayuda urgente — habla con alguien ya.",
+        "Acoger tus sentimientos permite aclarar próximos pasos.",
+        "No minimices tu sufrimiento — busca intervenciones prácticas.",
+        "Hay profesionales que ayudan a organizar la crisis en etapas.",
+        "Permítete pedir socorro: es señal de madurez y coraje.",
+        "Busca redes sociales y servicios locales que actúen en crisis.",
+        "La esperanza puede surgir con apoyo y acciones concretas.",
+        "Aun en el caos, un pequeño plan puede traer alivio inmediato.",
+        "Busca soporte que una asistencia emocional y práctica.",
+        "No tienes que enfrentar todo solo — pide ayuda."
+      ]
+    },
+    verses: {
+      suicidio: [
+        "Salmo 34:18 — Cerca está Jehová de los quebrantados de corazón.",
+        "Salmo 23:4 — Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo.",
+        "Isaías 41:10 — No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios.",
+        "Mateo 11:28 — Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar.",
+        "Jeremías 29:11 — Yo sé los planes que tengo para vosotros, dice Jehová, planes de bienestar y no de calamidad.",
+        "Salmo 42:11 — ¿Por qué te abates, oh alma mía? Espera en Dios.",
+        "Filipenses 4:13 — Todo lo puedo en Cristo que me fortalece.",
+        "Salmo 145:18 — Cercano está Jehová a todos los que le invocan.",
+        "Lamentaciones 3:21 — Esto recapacitaré en mi corazón, por lo tanto esperaré.",
+        "Salmo 55:22 — Echa sobre Jehová tu carga, y él te sustentará.",
+      ],
+      depressao: [
+        "Salmo 30:5 — Por la noche durará el lloro, y a la mañana vendrá la alegría.",
+        "Isaías 40:31 — Pero los que esperan a Jehová tendrán nuevas fuerzas.",
+        "Salmo 42:5 — ¿Por qué te abates, oh alma mía? Espera en Dios.",
+        "Mateo 11:28 — Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar.",
+        "Romanos 15:13 — Que el Dios de la esperanza os llene de todo gozo y paz.",
+        "2 Corintios 4:16 — Por tanto, no desmayamos.",
+        "Salmo 73:26 — Mi carne y mi corazón desfallecen; mas la roca de mi corazón y mi porción es Dios para siempre.",
+        "Salmo 130:5 — Esperé yo a Jehová, esperó mi alma.",
+        "Filipenses 4:6-7 — Por nada estéis afanosos; antes bien, sean conocidas vuestras peticiones... y la paz de Dios guardará vuestros corazones.",
+        "Hebreos 4:16 — Acerquémonos, pues, confiadamente al trono de la gracia.",
+      ],
+      ansiedade: [
+        "1 Pedro 5:7 — Echando toda vuestra ansiedad sobre él, porque él tiene cuidado de vosotros.",
+        "Filipenses 4:6 — Por nada estéis afanosos.",
+        "Salmo 56:3 — En el día que temo, yo en ti confío.",
+        "Isaías 41:10 — No temas, porque yo estoy contigo; no desmayes.",
+        "Juan 14:27 — La paz os dejo, mi paz os doy.",
+        "Mateo 6:34 — Así que, no os afanéis por el día de mañana.",
+        "Salmo 4:8 — En paz me acostaré, y asimismo dormiré.",
+        "Proverbios 12:25 — La congoja en el corazón del hombre lo abate.",
+        "Salmo 94:19 — En la multitud de mis pensamientos dentro de mí, tus consolaciones alegran mi alma.",
+        "Salmo 27:1 — Jehová es mi luz y mi salvación; ¿de quién temeré?",
+      ],
+      solidao: [
+        "Hebreos 13:5 — No te desampararé, ni te dejaré.",
+        "Deuteronomio 31:6 — Jehová va delante de ti; él estará contigo.",
+        "Salmo 27:10 — Aunque mi padre y mi madre me dejaran, con todo, Jehová me recogerá.",
+        "Salmo 68:5 — Padre de huérfanos y defensor de viudas.",
+        "Mateo 28:20 — Y he aquí yo estoy con vosotros todos los días, hasta el fin del mundo.",
+        "Salmo 142:4 — No hay quien cuide de mi vida.",
+        "Isaías 49:15 — ¡Nunca me olvidaré de ti!",
+        "Salmo 23:4 — Tú estás conmigo.",
+        "Isaías 43:1 — No temas, porque yo te redimí; te puse nombre, mío eres tú.",
+        "Salmo 139:7-8 — ¿A dónde me iré de tu Espíritu? ¿Y a dónde huiré de tu presencia?",
+      ],
+      traicao: [
+        "Salmo 34:18 — Cerca está Jehová de los quebrantados de corazón.",
+        "Salmo 147:3 — Él sana a los quebrantados de corazón, y venda sus heridas.",
+        "Salmo 55:22 — Echa sobre Jehová tu carga, y él te sustentará.",
+        "Filipenses 3:13-14 — Olvidando ciertamente lo que queda atrás, y extendiéndome a lo que está delante.",
+        "Isaías 61:1 — Me envió a vendar a los quebrantados de corazón.",
+        "Romanos 8:28 — Dios hace que todas las cosas cooperen para el bien de quienes lo aman.",
+        "Salmo 9:9 — Jehová será refugio del pobre.",
+        "Jeremías 30:17 — Mas yo haré venir sanidad para ti, y te curaré de tus heridas.",
+        "Salmo 18:2 — Jehová, roca mía y castillo mío, y mi libertador.",
+        "1 Corintios 13:7 — El amor todo lo sufre, todo lo cree, todo lo espera, todo lo soporta.",
+      ],
+      desespero: [
+        "Salmo 46:1 — Dios es nuestro amparo y fortaleza, nuestro pronto auxilio en las tribulaciones.",
+        "Mateo 6:34 — Así que, no os afanéis por el día de mañana.",
+        "Isaías 43:2 — Cuando pases por las aguas, yo estaré contigo.",
+        "Romanos 15:13 — Que el Dios de la esperanza os llene de gozo y paz.",
+        "Salmo 91:4 — Con sus plumas te cubrirá, y debajo de sus alas estarás seguro.",
+        "Salmo 13:5 — Mas yo en tu misericordia he confiado.",
+        "Juan 16:33 — En el mundo tendréis aflicción; pero confiad, yo he vencido al mundo.",
+        "Salmo 121:1-2 — ¿De dónde vendrá mi socorro? Mi socorro viene de Jehová.",
+        "Lamentaciones 3:22-23 — Las misericordias de Jehová nuevas son cada mañana.",
+        "Salmo 31:24 — Esforzaos todos vosotros los que esperáis en Jehová, y tome aliento vuestro corazón.",
+      ]
+    },
+    frasesIniciais: [
+      "Dios conoce tu dolor — y Él camina contigo ahora.",
+      "Aunque cansado, sigues siendo amado por Dios.",
+      "Nada está perdido para Aquel que hace nuevas todas las cosas.",
+      "Cuando falta la fuerza, Dios sostiene con Sus manos.",
+      "Tu vida tiene valor — mucho más de lo que imaginas.",
+      "Dios está cerca de los quebrantados de corazón.",
+      "La esperanza no ha muerto — Dios sigue escribiendo tu historia.",
+      "No estás solo. Dios está contigo.",
+      "El amor de Dios te envuelve aun cuando todo duele.",
+      "Dios te cuida incluso en días que no lo sientes.",
+      "La paz que buscas existe — y Dios puede dártela.",
+      "Dios te ve, te oye y te entiende.",
+      "Hay descanso para tu alma cansada — Dios lo promete.",
+      "Cuando no sabes cómo orar, Dios aun te sostiene.",
+      "No eres un error; eres una obra de Dios con propósito.",
+      "Dios es tu fuerza en la hora de la debilidad.",
+      "Eres más valiente de lo que piensas.",
+      "Dios está en tu mañana, incluso si no lo ves.",
+      "Hoy puede ser difícil, pero Dios prometió que no estarás solo.",
+      "El corazón cansado también es amado y cuidado.",
+      "Un nuevo comienzo es posible — Dios abre puertas donde no parecen existir."
+    ]
+  }
+};
+/* ----------------------- UI labels (i18n) ----------------------- */
+const i18n = {
+  pt: {
+    brand_title: "MeAjude.com",
+    brand_sub: "Acolhimento & Apoio — Você não está sozinho",
+    placeholder_example: "Escreva como você se sente: 'Eu me sinto sozinho e sem esperança, não sei o que fazer.'",
+    prompt: "Escreva, fale sobre o que sente ou clique em 'Me Ajude' para receber apoio.",
+    btn_help: "Me Ajude 🙏",
+    btn_breath: "Respiração Guiada",
+    btn_pray: "Ore comigo",
+    urgent_text: "Se você está em risco de se machucar ou pensa em tirar a própria vida, ligue agora para o CVV: <b>188</b> (24h). Procure emergência local imediatamente.",
+    btn_cvv: "Ligar para o CVV — 188",
+    btn_sus: "Busque Ajuda (SUS)",
+    btn_pros: "Profissionais de Saúde",
+    btn_danger: "Estou em perigo agora",
+    suicide_weight: "Peso suicídio",
+    breath_title: "Respiração guiada",
+    breath_text: "Siga a esfera: inspire 4s — segure 4s — expire 6s. Repita 3 vezes.",
+    pray_title: "Ore comigo",
+    pray_desc: "Uma oração curta para conforto.",
+    prayer_text: "Senhor, Tu conheces meu coração. Dá-me descanso, acalma minha mente e mostra um caminho. Dá forças para buscar ajuda. Amém.",
+    reminder: "Lembre-se: reconhecer limites e pedir ajuda é um ato de coragem. Busque apoio profissional.",
+    pro_tip: "Digite sua cidade para ver profissionais — protótipo com lista estática (fácil de conectar a API).",
+    city_placeholder: "Ex: São Paulo, Rio de Janeiro...",
+    btn_search: "Buscar",
+    btn_close: "Fechar",
+    btn_back: "Voltar",
+    modal_danger_title: "Se você está em perigo agora",
+    modal_danger_cvv: "Telefone de emergência CVV:",
+    modal_danger_action: "disponível 24 horas.",
+    modal_danger_text: "Se houver risco imediato, ligue para os serviços de emergência locais (SAMU/192 ou Bombeiros/193) ou vá ao pronto-socorro mais próximo.",
+    voice_talk: "Falar",
+    voice_listening: "Ouvindo…",
+    voice_not_supported: "O reconhecimento de voz não é compatível com este navegador.",
+    listen_error: "Erro no reconhecimento de voz. Tente escrever ou clique em Falar de novo."
+  },
+  en: {
+    brand_title: "MeAjude.com",
+    brand_sub: "Comfort & Support — You are not alone",
+    placeholder_example: "Write how you feel: 'I feel alone and hopeless, I don't know what to do.'",
+    prompt: "Write, speak about how you feel, or click 'Help Me' to receive support.",
+    btn_help: "Help Me 🙏",
+    btn_breath: "Guided Breathing",
+    btn_pray: "Pray with me",
+    urgent_text: "If you are at risk of self-harm or thinking of taking your own life, call your crisis line now (ex: 988 or 111). Seek local emergency help immediately.",
+    btn_cvv: "Call Crisis Line",
+    btn_sus: "Seek Public Health",
+    btn_pros: "Health Professionals",
+    btn_danger: "I am in danger now",
+    suicide_weight: "Suicide Weight",
+    breath_title: "Guided Breathing",
+    breath_text: "Follow the sphere: inhale 4s — hold 4s — exhale 6s. Repeat 3 times.",
+    pray_title: "Pray with me",
+    pray_desc: "A short prayer for comfort.",
+    prayer_text: "Lord, You know my heart. Give me rest, calm my mind, and show me a path. Give me strength to seek help. Amen.",
+    reminder: "Remember: recognizing limits and asking for help is an act of courage. Seek professional support.",
+    pro_tip: "Enter your city to see professionals — static list prototype (easy to connect to API).",
+    city_placeholder: "Ex: New York, London...",
+    btn_search: "Search",
+    btn_close: "Close",
+    btn_back: "Back",
+    modal_danger_title: "If you are in danger now",
+    modal_danger_cvv: "Crisis emergency number:",
+    modal_danger_action: "available 24 hours.",
+    modal_danger_text: "If there is immediate risk, call local emergency services (ex: 911 or 999) or go to the nearest emergency room.",
+    voice_talk: "Speak",
+    voice_listening: "Listening…",
+    voice_not_supported: "Voice recognition is not supported by this browser.",
+    listen_error: "Voice recognition error. Try typing or click Speak again."
+  },
+  es: {
+    brand_title: "MeAjude.com",
+    brand_sub: "Acogida y Apoyo — No estás solo",
+    placeholder_example: "Escribe cómo te sientes: 'Me siento solo y sin esperanza, no sé qué hacer.'",
+    prompt: "Escribe, habla de lo que sientes o haz clic en 'Ayúdame' para recibir apoyo.",
+    btn_help: "Ayúdame 🙏",
+    btn_breath: "Respiración Guiada",
+    btn_pray: "Ora conmigo",
+    urgent_text: "Si estás en riesgo de hacerte daño o piensas en quitarte la vida, llama ahora a tu línea de crisis (ej. 112 o 911). Busca ayuda de emergencia local de inmediato.",
+    btn_cvv: "Llamar a Línea de Crisis",
+    btn_sus: "Buscar Ayuda Pública",
+    btn_pros: "Profesionales de Salud",
+    btn_danger: "Estoy en peligro ahora",
+    suicide_weight: "Peso suicidio",
+    breath_title: "Respiración guiada",
+    breath_text: "Sigue la esfera: inhala 4s — aguanta 4s — exhala 6s. Repite 3 veces.",
+    pray_title: "Ora conmigo",
+    pray_desc: "Una oración corta para confort.",
+    prayer_text: "Señor, Tú conoces mi corazón. Dame descanso, calma mi mente y muéstrame un camino. Dame fuerzas para buscar ayuda. Amén.",
+    reminder: "Recuerda: reconocer límites y pedir ayuda es un acto de valentía. Busca apoyo profesional.",
+    pro_tip: "Ingresa tu ciudad para ver profesionales — prototipo con lista estática (fácil de conectar a API).",
+    city_placeholder: "Ej: Madrid, Buenos Aires...",
+    btn_search: "Buscar",
+    btn_close: "Cerrar",
+    btn_back: "Volver",
+    modal_danger_title: "Si estás en peligro ahora",
+    modal_danger_cvv: "Teléfono de emergencia de crisis:",
+    modal_danger_action: "disponible 24 horas.",
+    modal_danger_text: "Si hay riesgo inmediato, llama a los servicios de emergencia locales (ex: 112 o 911) o ve a la sala de urgencias más cercana.",
+    voice_talk: "Hablar",
+    voice_listening: "Escuchando…",
+    voice_not_supported: "El reconocimiento de voz no es compatible con este navegador.",
+    listen_error: "Error en el reconocimiento de voz. Intenta escribir o haz clic en Hablar de nuevo."
+  }
 };
 
-// ---------- VERSÍCULOS (vários por categoria) ----------
-const verses = {
-  suicidio: [
-    "Salmo 34:18 — O Senhor está perto dos que têm o coração quebrantado.",
-    "Salmo 23:4 — Ainda que eu ande pelo vale da sombra da morte, não temerei mal algum; tu estás comigo.",
-    "Isaías 41:10 — Não temas, porque eu sou contigo; não te assombres, porque eu sou teu Deus.",
-    "Mateus 11:28 — Vinde a mim os cansados e eu vos aliviarei.",
-    "Jeremias 29:11 — Eu sei os planos que tenho para vós, diz o Senhor, planos de paz."
-  ],
-  depressao: [
-    "Mateus 11:28 — Venham a mim os que estão cansados e eu lhes darei descanso.",
-    "Salmo 30:5 — O choro pode durar uma noite, mas a alegria vem pela manhã.",
-    "Filipenses 4:6-7 — Não andem ansiosos... e a paz de Deus guardará o coração.",
-    "Isaías 40:31 — Os que esperam no Senhor renovarão as suas forças.",
-    "Salmo 42:11 — Por que estás abatida, ó minha alma? Espera em Deus."
-  ],
-  ansiedade: [
-    "1 Pedro 5:7 — Lancem sobre ele toda a ansiedade, porque ele tem cuidado de vocês.",
-    "Filipenses 4:6 — Não andem ansiosos por coisa alguma.",
-    "Salmo 56:3 — Quando eu estiver com medo, confiarei em ti.",
-    "Isaías 26:3 — Tu conservarás em paz aquele cujo propósito está firme.",
-    "Josué 1:9 — Não te mandei eu? Sê forte e corajoso."
-  ],
-  solidao: [
-    "Hebreus 13:5 — Nunca te deixarei, nem te desampararei.",
-    "Deuteronômio 31:6 — O Senhor vai adiante de ti; não te deixará nem te desamparará.",
-    "Salmo 27:10 — Ainda que meus pais me deixem, o Senhor me recolherá.",
-    "Salmo 68:5 — Pai dos órfãos e protetor das viúvas.",
-    "Mateus 28:20 — Estou convosco todos os dias."
-  ],
-  traicao: [
-    "Salmo 34:18 — O Senhor está perto dos que têm o coração quebrantado.",
-    "Salmo 147:3 — Cura os quebrantados de coração, e liga as suas feridas.",
-    "Romanos 8:28 — Todas as coisas cooperam para o bem dos que amam a Deus.",
-    "Lamentações 3:22-23 — As misericórdias do Senhor não têm fim; são novas a cada manhã.",
-    "Provérbios 3:5 — Confia no Senhor de todo o teu coração."
-  ],
-  desespero: [
-    "Salmo 46:1 — Deus é nosso refúgio e fortaleza, socorro bem presente na angústia.",
-    "Mateus 6:34 — Não vos preocupeis com o amanhã; cada dia tem seu cuidado.",
-    "Isaías 43:2 — Quando passares pelas águas estarei contigo.",
-    "Romanos 15:13 — Que o Deus da esperança vos encha de alegria e paz.",
-    "Salmo 91:4 — Ele te cobrirá com suas penas, e debaixo das suas asas estarás seguro."
-  ]
-};
+// --- Novo código para o estilo visual do slider de Peso Suicídio ---
+/**
+ * Atualiza o estilo visual do slider de peso de suicídio.
+ * Controla o preenchimento da trilha e a cor do puxador/trilha.
+ */
+function updateSliderStyle() {
+  const slider = document.getElementById('suicideWeight');
+  if (!slider) return;
+  const value = parseFloat(slider.value);
+  const min = parseFloat(slider.min);
+  const max = parseFloat(slider.max);
+  const percent = ((value - min) / (max - min)) * 100;
+  const root = document.documentElement;
+  const isDark = document.body.classList.contains('dark');
+  
+  // 1. Lógica de Cores (de Azul para Vermelho)
+  // Ajuste da escala de cores para mais sensibilidade ao risco.
+  let riskColor;
 
-// Frases iniciais bíblicas e acolhedoras
-const frasesIniciais = [
-  "Deus conhece sua dor — e Ele caminha com você agora.",
-  "Mesmo cansado, você ainda é amado por Deus.",
-  "Nada está perdido para Aquele que faz novas todas as coisas.",
-  "Quando falta força, Deus sustenta com Suas mãos.",
-  "A sua vida tem valor — muito mais do que você imagina.",
-  "Deus está perto dos que têm o coração quebrado.",
-  "A esperança não morreu — Deus ainda está escrevendo a sua história.",
-  "Você não está sozinho. Deus está com você.",
-  "O amor de Deus te envolve mesmo quando tudo dói.",
-  "Deus cuida de você até nos dias em que você não consegue sentir nada.",
-  "A paz que você procura existe — e Deus pode te dar.",
-  "Deus te vê, te ouve e te entende.",
-  "Há descanso para sua alma cansada — Deus promete isso.",
-  "Quando você não sabe mais orar, Deus ainda te sustenta.",
-  "Você não é um erro. Você é uma criação amada por Deus.",
-  "Deus transforma lágrimas em força.",
-  "Um dia de cada vez — Deus caminha com você em todos eles.",
-  "Você está vivo, e isso significa que Deus ainda tem propósito para você.",
-  "Mesmo em silêncio, Deus trabalha a seu favor.",
-  "Deus segura sua mão quando você não consegue seguir sozinho.",
-  "A sua dor não define o seu futuro.",
-  "Deus é maior que o medo que te atormenta.",
-  "A luz voltará — Deus não te abandonou.",
-  "Nenhuma ferida é grande demais para o amor de Deus curar.",
-  "Há esperança para você — sempre houve, sempre haverá.",
-  "Deus te ama exatamente como você é, mesmo ferido.",
-  "Não desista: Deus está trabalhando onde você não consegue ver.",
-  "Hoje pode ser difícil, mas Deus prometeu que você não estaria sozinho.",
-  "O coração cansado também é amado, também é cuidado.",
-  "Um recomeço é possível — Deus abre portas onde nenhuma parece existir."
-];
+  // Nível 1: Azul (Seguro / Base / Minímo)
+  if (value <= 2) {
+    riskColor = getComputedStyle(root).getPropertyValue('--primary');
+  }
+  // Nível 2: Amarelo/Laranja (Alerta)
+  else if (value <= 6) {
+    riskColor = isDark ? getComputedStyle(root).getPropertyValue('--risk-color-light').trim() : '#ffc36e';
+  }
+  // Nível 3: Vermelho (Perigo/Urgência)
+  else {
+    riskColor = getComputedStyle(root).getPropertyValue('--danger');
+  }
 
-// ---------- Função aleatória frases ---------
+  // Define a cor de risco (custom property)
+  root.style.setProperty('--risk-color', riskColor);
 
-function carregarFraseInicial() {
-  const frase =
-    frasesIniciais[Math.floor(Math.random() * frasesIniciais.length)];
+  // 2. Preenchimento da Trilha (Track fill)
+  // Para Webkit (Chrome, Safari)
+  slider.style.background = `linear-gradient(to right, ${riskColor} 0%, ${riskColor} ${percent}%, var(--bg2) ${percent}%, var(--bg2) 100%)`;
 
-  const elemento = document.getElementById("fraseInicial");
-  if (elemento) {
-    elemento.innerText = frase;
+  // Para Firefox
+  // A cor do thumb (puxador) é gerenciada via CSS ::-moz-range-thumb usando --risk-color
+  // O preenchimento da trilha não é padrão, mas o background padrão já cobre a cor.
+}
+
+// Inicia o estilo inicial ao carregar a página (agora valor=1)
+updateSliderStyle();
+// -------------------------------------------------------------------
+
+/* ----------------------- CORE FUNCTIONS ----------------------- */
+
+/**
+ * Retrieves the current language setting from localStorage or defaults to 'pt'.
+ * @returns {string} The current language code ('pt', 'en', or 'es').
+ */
+function getLang() {
+  const savedLang = localStorage.getItem('language');
+  return ['pt', 'en', 'es'].includes(savedLang) ? savedLang : 'pt';
+}
+
+/**
+ * Applies the selected language to all UI elements based on data-i18n attributes.
+ * Also updates the language of the voice recognition engine.
+ * @param {string} lang - The language code ('pt', 'en', or 'es').
+ */
+function applyI18n(lang) {
+  const texts = i18n[lang] || i18n.pt;
+  
+  // Update all elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (texts[key]) {
+      el.textContent = texts[key];
+    }
+  });
+  
+  // Update all elements with data-i18n-placeholder attribute
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (texts[key]) {
+      el.placeholder = texts[key];
+    }
+  });
+
+  // Update prayer text dynamically
+  if (document.getElementById('prayText')) {
+    document.getElementById('prayText').innerHTML = texts.prayer_text;
+  }
+  
+  // Update initial phrase
+  updateInitialPhrase();
+  
+  // Update footer text
+  document.getElementById('footerText').textContent = `© 2024 MeAjude.com (${lang.toUpperCase()})`;
+  
+  // Set language attribute for screen readers
+  document.documentElement.lang = lang;
+  
+  // Update flag buttons' active state (Do not remove, to comply with "NÃO REMOVA NADA")
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    const isActive = btn.getAttribute('data-lang') === lang;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive);
+  });
+
+  // NEW: Update the language select dropdown value
+  const select = document.getElementById('languageSelect');
+  if (select) {
+      select.value = lang;
   }
 }
 
+/**
+ * Displays a random initial phrase in the current language.
+ */
+function updateInitialPhrase() {
+  const lang = getLang();
+  const langContent = content[lang] || content.pt;
+  const phrases = langContent.frasesIniciais;
+  const randomIndex = Math.floor(Math.random() * phrases.length);
+  document.getElementById('fraseInicial').textContent = phrases[randomIndex];
+}
 
-// ---------- LÓGICA DE ANÁLISE ----------
-function analyzeText(text){
-  const t = text.toLowerCase();
-  const scores = {};
-  // inicializa
-  for(const k in keywords) scores[k]=0;
-  // conta ocorrências
-  for(const k in keywords){
-    keywords[k].forEach(kw=>{
-      // palavra inteira ou expressão
-      if(t.includes(kw)) {
-        // weight: termos suicidas têm maior peso
-        const w = (k==='suicidio') ? 6 : 1;
-        scores[k] += w;
+/**
+ * Handles the click on the Analyze button: detects categories and generates a response.
+ */
+function handleAnalyze() {
+  const inputText = document.getElementById('inputText').value.trim();
+  const resultBox = document.getElementById('resultBox');
+  const urgentBox = document.getElementById('urgentBox');
+  const messageText = document.getElementById('messageText');
+  const verseText = document.getElementById('verseText');
+  const urgentText = document.getElementById('urgentText');
+  const texts = i18n[getLang()] || i18n.pt;
+
+  // Reset display
+  urgentBox.classList.add('hidden');
+  resultBox.style.display = 'none';
+
+  if (!inputText) {
+    messageText.innerHTML = (i18n[getLang()] || i18n.pt).messages.default_short || "<p>Por favor, escreva um pouco mais sobre o que está sentindo para que eu possa tentar te ajudar melhor.</p>";
+    resultBox.style.display = 'block';
+    return;
+  }
+
+  // ----------------------------------------------------
+  // LÓGICA DE RISCO DE SUICÍDIO (COM MAPPING AGRESSIVO)
+  // ----------------------------------------------------
+  let rawRiskScore = 0;
+  const lowerText = inputText.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  
+  // 1. Contar palavras-chave de risco (Suicídio)
+  keywords.suicidio.forEach(word => {
+    if (lowerText.includes(word)) {
+      rawRiskScore += 1;
+    }
+  });
+
+  // 2. Aumentar peso para frases de alto risco (ex: "me matar" vale 2 pontos)
+  const riskPhrases = ["vou me matar", "quero morrer", "acabar com tudo", "tirar a própria vida", "melhor morto", "nao quero mais viver", "cortar os pulsos"];
+  riskPhrases.forEach(phrase => {
+    if (lowerText.includes(phrase.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
+      rawRiskScore += 2;
+    }
+  });
+
+  let normalizedRisk = 1; // Valor mínimo (slider min)
+  if (rawRiskScore > 0) {
+    // FIX 2: Mapeamento mais agressivo para forçar o MAX (10/Vermelho)
+    if (rawRiskScore >= 3) { // 3 pontos (ex: uma frase de alto risco + 1 keyword) já é Risco Máximo.
+      normalizedRisk = 10;
+    } else {
+      // Curva mais íngreme para 1 ou 2 hits
+      // 1 hit (keyword): 1 + 3.5 = 4.5 (Laranja/Alerta)
+      // 2 hits (2 keywords): 1 + 7 = 8 (Vermelho/Perigo)
+      normalizedRisk = Math.min(10, Math.max(1, 1 + (rawRiskScore * 3.5)));
+      normalizedRisk = Math.round(normalizedRisk);
+    }
+  }
+
+  // 3. Define o valor do slider (O MOVIMENTO)
+  const suicideSlider = document.getElementById('suicideWeight');
+  suicideSlider.value = normalizedRisk;
+  updateSliderStyle(); // Atualiza a cor e preenchimento visualmente
+
+  // ----------------------------------------------------
+  // ANÁLISE DE CATEGORIAS
+  // ----------------------------------------------------
+  const detectedCategories = analyzeText(inputText);
+  const response = buildResponseFromCategories(detectedCategories);
+
+  messageText.innerHTML = response.message;
+  verseText.textContent = response.verse;
+  resultBox.style.display = 'block';
+  updateInitialPhrase(); // Pega uma nova frase inicial para a próxima interação
+
+  if (response.isUrgent) {
+    urgentText.innerHTML = texts.urgent_text;
+    urgentBox.classList.remove('hidden');
+  }
+
+  // Scroll to result for better UX on small screens
+  resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
+ * Detects the most relevant categories in the input text based on keywords.
+ * @param {string} text - The user's input text.
+ * @returns {Array<string>} A list of the top 3 relevant category codes.
+ */
+function analyzeText(text) {
+  const lowerText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const scores = {
+    suicidio: 0,
+    depressao: 0,
+    ansiedade: 0,
+    solidao: 0,
+    traicao: 0,
+    desespero: 0
+  };
+
+  // Score base from keywords
+  for (const category in keywords) {
+    keywords[category].forEach(word => {
+      if (lowerText.includes(word.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
+        scores[category]++;
       }
     });
   }
-  // também checa presença de múltiplos termos via regex de frases de risco
-  const riskRegex = /(\b(me matar|quero morrer|tirar a própria vida|não aguento mais|desisto|melhor morrer|acabou comigo)\b)/i;
-  const isRisk = riskRegex.test(text);
-  // escolhe a maior pontuação
-  let best = 'desespero';
-  let max = -1;
-  for(const k in scores){
-    if(scores[k] > max){ max = scores[k]; best = k; }
-  }
-  // se não há hits, tenta detectar vazio -> desespero fallback
-  if(max<=0) best='desespero';
-  return {category:best, scores, isRisk};
-}
-
-// ---------- UTILITÁRIOS ----------
-function randFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-function showResult(msg,verse,isRisk){
-  const box=document.getElementById('resultBox');
-  document.getElementById('messageText').innerText = msg;
-  document.getElementById('verseText').innerText = verse;
-  // urgent box
-  const urgent = document.getElementById('urgentBox');
-  if(isRisk) urgent.classList.remove('hidden'); else urgent.classList.add('hidden');
-  box.style.display='block';
-  // scroll into view (mobile)
-  setTimeout(()=>box.scrollIntoView({behavior:'smooth', block:'center'}),100);
-}
-
-// ---------- EVENTOS ----------
-document.getElementById('analyzeBtn').addEventListener('click', ()=>{
-  const text = document.getElementById('inputText').value.trim();
-  const {category,isRisk} = analyzeText(text);
-  // seleciona mensagem e versiculo
-  const msg = randFrom(messages[category]);
-  const verse = randFrom(verses[category]);
-  showResult(msg,verse,isRisk);
-});
-
-document.getElementById('susBtn').addEventListener('click', ()=>{
-  window.open('https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-mental','_blank');
-});
-
-// CVV button handlers (these cannot actually dial in browser; show instructions)
-document.getElementById('cvvBtn').addEventListener('click', ()=>{
-  alert('Se puder, ligue agora para o CVV: 188 — se estiver no Brasil. Em caso de risco imediato, ligue para os serviços de emergência locais.');
-});
-document.getElementById('dangerBtn').addEventListener('click', ()=>{
-  document.getElementById('modalDanger').style.display='flex';
-});
-document.getElementById('closeDanger').addEventListener('click', ()=>document.getElementById('modalDanger').style.display='none');
-document.getElementById('closeDangerBtn').addEventListener('click', ()=>document.getElementById('modalDanger').style.display='none');
-document.getElementById('callCvvModal').addEventListener('click', ()=>alert('Ligar para CVV: 188 — procure atendimento de emergência local se houver risco.'));
-document.getElementById('professionalsBtn').addEventListener('click', ()=>document.getElementById('modalProf').style.display='flex');
-document.getElementById('closeProf').addEventListener('click', ()=>document.getElementById('modalProf').style.display='none');
-document.getElementById('searchPro').addEventListener('click', showPrototypes);
-
-// close modal when clicking outside
-document.querySelectorAll('.modal').forEach(m=>{
-  m.addEventListener('click', (e)=>{
-    if(e.target === m) m.style.display='none';
-  });
-});
-
-// breath modal
-document.getElementById('breathBtn').addEventListener('click', ()=>document.getElementById('modalBreath').style.display='flex');
-document.getElementById('closeBreath').addEventListener('click', ()=>document.getElementById('modalBreath').style.display='none');
-document.getElementById('startBreath').addEventListener('click', startBreathing);
-document.getElementById('stopBreath').addEventListener('click', stopBreathing);
-
-// prayer modal
-document.getElementById('prayBtn').addEventListener('click', ()=>document.getElementById('modalPray').style.display='flex');
-document.getElementById('closePray').addEventListener('click', ()=>document.getElementById('modalPray').style.display='none');
-document.getElementById('prayClose').addEventListener('click', ()=>document.getElementById('modalPray').style.display='none');
-
-// ---------- PROFESSIONALS PROTOTYPE (static) ----------
-function showPrototypes(){
-  const city = document.getElementById('cityInput').value || 'sua cidade';
-  const list = document.getElementById('proList');
-  // exemplo estático - fácil de substituir por API
-  const sample = [
-    {name:"Dr. João Silva", role:"Psiquiatra", address:"Rua Principal, 123", phone:"(11) 3000-0000", site:""},
-    {name:"Dra. Ana Moura", role:"Psicóloga", address:"Av. Central, 45", phone:"(11) 98888-0000", site:""},
-    {name:"Clínica Nova Esperança", role:"Equipe Multidisciplinar", address:"R. das Flores, 77", phone:"(11) 4000-1111", site:"https://clinicanova.ex"}
+  
+  // --- SUICIDE RISK WEIGHTING ---
+  const suicideWeightSlider = document.getElementById('suicideWeight');
+  const suicideMultiplier = suicideWeightSlider ? parseFloat(suicideWeightSlider.value) : 6;
+  
+  // High-risk phrases that should drastically increase the score
+  const riskPhrases = [ 
+    "vou me matar","quero morrer","acabar com tudo","tirar a própria vida",
+    "melhor morto","nao quero mais viver","cortar os pulsos" 
   ];
-  let html = `<p class="small">Protótipo: resultados para <b>${city}</b> — conecte a uma base real (ex.: lista de profissionais do CRM/Conselho regional).</p>`;
-  sample.forEach(s=>{
-    html += `<div class="pro-item"><b>${s.name}</b> — ${s.role}<div class="small">${s.address} • ${s.phone} ${s.site ? '• ' + s.site : ''}</div></div>`;
+  
+  riskPhrases.forEach(phrase => {
+    if (lowerText.includes(phrase.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
+      scores.suicidio += 2; // Fixed base increase for high-risk phrase detection
+    }
   });
-  list.innerHTML = html;
+
+  // Apply the slider multiplier to the 'suicidio' score
+  scores.suicidio *= suicideMultiplier;
+
+  // Sort categories by score
+  const sortedCategories = Object.entries(scores)
+    .sort(([, a], [, b]) => b - a)
+    .filter(([, score]) => score > 0)
+    .map(([category]) => category);
+
+  // Return top 3 non-zero scores
+  return sortedCategories.slice(0, 3);
 }
 
-// ---------- BREATHING ANIMATION ----------
-let breathInterval = null;
-function startBreathing(){
-  const circle = document.getElementById('breathCircle');
-  let step = 0;
-  // times: inspire 4s, hold 4s, exhale 6s => loop 14s
-  const cycle = [
-    {scale:1.0, dur:0}, // initial
-  ];
-  if(breathInterval) clearInterval(breathInterval);
-  // animate using CSS transform with JS timers
-  function animateOnce(){
-    // inspire 4s
-    circle.style.transition = 'transform 4s ease-in-out';
-    circle.style.transform = 'scale(1.4)';
-    setTimeout(()=>{ // hold 4s
-      circle.style.transition = 'transform 4s linear';
-      // hold stays
-      setTimeout(()=>{ // exhale 6s
-        circle.style.transition = 'transform 6s ease-in-out';
-        circle.style.transform = 'scale(0.8)';
-      }, 4000);
-    }, 4000);
+/**
+ * Builds the response message and verse based on the detected categories.
+ * @param {Array<string>} categories - The list of relevant categories.
+ * @returns {{message: string, verse: string, isUrgent: boolean}}
+ */
+function buildResponseFromCategories(categories) {
+  const lang = getLang();
+  const langContent = content[lang];
+  const texts = i18n[lang] || i18n.pt;
+  let message = "";
+  let verse = "";
+  let isUrgent = categories.includes('suicidio'); // Flag to show urgent box
+
+  if (categories.length === 0) {
+    message = texts.messages.default || "Obrigado por compartilhar. Sinto muito que esteja difícil. Lembre-se, estamos aqui para te ajudar. Por favor, busque apoio profissional.";
+    verse = "";
+  } else {
+    // Generate a compound message from the top categories
+    categories.forEach(cat => {
+      if (langContent.messages[cat]) {
+        const randomIndex = Math.floor(Math.random() * langContent.messages[cat].length);
+        message += `<p>${langContent.messages[cat][randomIndex]}</p>`;
+      }
+    });
+    
+    // Select a random verse from the top category (or just the first one)
+    const topCategory = categories[0];
+    if (langContent.verses[topCategory]) {
+      const verseList = langContent.verses[topCategory];
+      const randomVerseIndex = Math.floor(Math.random() * verseList.length);
+      verse = verseList[randomVerseIndex];
+    }
   }
-  animateOnce();
-  breathInterval = setInterval(animateOnce, 14000);
-}
-function stopBreathing(){ if(breathInterval) clearInterval(breathInterval); breathInterval=null;
-  const circle = document.getElementById('breathCircle'); circle.style.transform='scale(1)'; circle.style.transition='transform 300ms';
+
+  return { message, verse, isUrgent };
 }
 
-// ---------- Inicialização: pequenas dicas na primeira carga ----------
-window.addEventListener('load', ()=>{
-  // opcional: mostrar uma mensagem inicial acolhedora
-  // document.getElementById('resultBox').style.display='block';
-  // document.getElementById('messageText').innerText = 'Se precisar, escreva aqui o que sente. Clique em "Me Ajude" para receber uma mensagem de apoio.';
-  // document.getElementById('verseText').innerText = 'Lembrete: CVV — 188.';
-});
 
-// ---------- Observação final: nada aqui substitui ajuda profissional ----------
-/* Nota: este protótipo foi feito para acolhimento e indicação de ajuda. Não substitui avaliação clínica. */
-
-window.onload = () => {
-  carregarFraseInicial();
-};
-
-</script>
-
-<script>
-
-// … Demais códigos e funções
-
-// ================================================
-//   RECONHECIMENTO DE VOZ - VERSÃO PREMIUM
-// ================================================
+// --- Voice Recognition ---
 let recognition;
-
-const voiceBtn = document.getElementById("voiceBtn");
-const voiceLabel = document.getElementById("voiceLabel");
-
-if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-
-    const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-
+let isListening = false;
+function initVoiceRecognition() {
+  const voiceBtn = document.getElementById('voiceBtn');
+  const voiceLabel = document.getElementById('voiceLabel');
+  
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      voiceBtn.disabled = true;
+      voiceBtn.style.display = 'none'; // Hide if not supported
+  } else {
+    // Initial setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
-
-    recognition.lang = "pt-BR";
+    recognition.lang = (getLang() === 'en' ? 'en-US' : (getLang()==='es' ? 'es-ES' : 'pt-BR'));
     recognition.continuous = false;
     recognition.interimResults = false;
 
-    // Quando recebe a fala
-    recognition.onresult = function (event) {
-        const texto = event.results[0][0].transcript;
-        document.getElementById("inputText").value = texto;
+    recognition.onstart = ()=>{ voiceBtn.classList.add('listening'); voiceLabel.textContent = (i18n[getLang()] || i18n.pt).voice_listening || 'Ouvindo…'; };
+    recognition.onend = ()=>{ voiceBtn.classList.remove('listening'); voiceLabel.textContent = (i18n[getLang()] || i18n.pt).voice_talk || 'Falar'; };
+    recognition.onerror = (e)=>{ voiceBtn.classList.remove('listening'); voiceLabel.textContent=(i18n[getLang()]||i18n.pt).voice_talk; alert((i18n[getLang()]||i18n.pt).listen_error); };
+
+    recognition.onresult = function(evt){
+      const texto = evt.results[0][0].transcript;
+      document.getElementById('inputText').value = texto;
+      handleAnalyze(); // Automatically analyze after speech input
     };
 
-    // Quando começa a ouvir
-    recognition.onstart = () => {
-        voiceBtn.classList.add("listening");
-        voiceLabel.textContent = "Ouvindo…";
-    };
+    voiceBtn.addEventListener('click', ()=> {
+      try{ 
+        // Update language right before starting
+        recognition.lang = (getLang() === 'en' ? 'en-US' : (getLang()==='es' ? 'es-ES' : 'pt-BR')); 
+        recognition.start(); 
+      }
+      catch(e){ 
+        alert((i18n[getLang()]||i18n.pt).listen_error); 
+        console.error("Voice recognition failed to start:", e);
+      }
+    });
+  }
+}
 
-    // Quando termina
-    recognition.onend = () => {
-        voiceBtn.classList.remove("listening");
-        voiceLabel.textContent = "Falar";
-    };
+// --- Theme Toggle ---
+/**
+ * Toggles dark/light theme and saves preference.
+ * @param {boolean} isDark
+ */
+function applyTheme(isDark) {
+  if (isDark) {
+    document.body.classList.add('dark');
+    document.getElementById('themeToggle').textContent = '☀️';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.remove('dark');
+    document.getElementById('themeToggle').textContent = '🌙';
+    localStorage.setItem('theme', 'light');
+  }
+  updateSliderStyle(); // Recalculate slider color for the new theme
+}
 
-    recognition.onerror = () => {
-        voiceBtn.classList.remove("listening");
-        voiceLabel.textContent = "Falar";
-        alert("Não consegui ouvir claramente. Tente novamente.");
-    };
+// --- Modals and Actions ---
+let professionals = {
+  pt: [
+    { name: "Dra. Ana C. Pereira (Psicóloga)", phone: "(11) 98765-4321", loc: "Pinheiros - São Paulo/SP" },
+    { name: "Dr. João M. Santos (Psiquiatra)", phone: "(31) 3210-9876", loc: "Savassi - Belo Horizonte/MG" }
+  ],
+  en: [
+    { name: "Dr. Mark R. Johnson (Psychologist)", phone: "555-0101", loc: "New York, NY" },
+    { name: "Dr. Lisa K. Chen (Psychiatrist)", phone: "555-0102", loc: "London, UK" }
+  ],
+  es: [
+    { name: "Dra. Elena Gómez (Psicóloga)", phone: "91-123-4567", loc: "Centro - Madrid" },
+    { name: "Dr. Ricardo Díaz (Psiquiatra)", phone: "11-4567-8901", loc: "Palermo - Buenos Aires" }
+  ]
+};
 
-} else {
-    alert("Seu navegador não suporta reconhecimento de voz.");
+function handleSearchPro() {
+  const lang = getLang();
+  const cityInput = document.getElementById('cityInput');
+  const proList = document.getElementById('proList');
+  const city = cityInput.value.trim();
+  
+  // Simple filter (prototyping purposes)
+  const list = professionals[lang] || professionals.pt;
+  const filteredList = city ? list.filter(p => p.loc.toLowerCase().includes(city.toLowerCase())) : list;
+
+  if (filteredList.length > 0) {
+    proList.innerHTML = filteredList.map(p => `
+      <div class="pro-item">
+        <b>${p.name}</b><br>
+        ${p.loc}<br>
+        <a href="tel:${p.phone}">${p.phone}</a>
+      </div>
+    `).join('');
+  } else {
+    proList.innerHTML = `<p class="small">${(i18n[lang] || i18n.pt).messages.no_pro_found || 'Nenhum profissional encontrado nesta cidade.'}</p>`;
+  }
+}
+
+// --- Breath Circle Logic ---
+let breathInterval;
+let breathCycle = 0; // 0=Inhale, 1=Hold, 2=Exhale
+const breathCircle = document.getElementById('breathCircle');
+const startBreathBtn = document.getElementById('startBreath');
+const stopBreathBtn = document.getElementById('stopBreath');
+
+function startBreathing() {
+  stopBreathing(); // Stop any existing interval
+
+  // Initial state: Start with Exhale to go to Inhale (0) in 6s
+  breathCircle.style.transition = 'none';
+  breathCircle.style.transform = 'scale(1)';
+  breathCircle.style.opacity = '0.5';
+
+  // Start the first cycle (Inhale, which is cycle 0) after 600ms transition
+  setTimeout(() => {
+    breathCycle = 2; // Set to exhale so the nextCycle calls Inhale (0)
+    nextBreathCycle();
+    // This is a correction: The first call to nextBreathCycle will be a jump.
+    // Let's set the initial state to the start of the INHALE cycle
+    breathCircle.style.transition = 'transform 4s ease-out, opacity 4s ease-out';
+    breathCircle.style.transform = 'scale(1.8)';
+    breathCircle.style.opacity = '0.7';
+    breathCycle = 1; // Next cycle will be HOLD
+    clearInterval(breathInterval); // Clear old interval
+    breathInterval = setInterval(nextBreathCycle, 4000);
+  }, 100);
+
+  startBreathBtn.disabled = true;
+  stopBreathBtn.disabled = false;
+}
+
+function nextBreathCycle() {
+  if (breathCycle === 0) {
+    // Inhale (4s) - starts at the end of the 6s exhale
+    clearInterval(breathInterval);
+    breathCircle.style.transition = 'transform 4s ease-out, opacity 4s ease-out';
+    breathCircle.style.transform = 'scale(1.8)';
+    breathCircle.style.opacity = '0.7';
+    breathInterval = setInterval(nextBreathCycle, 4000); // Wait 4s for inhale
+    breathCycle = 1;
+  } else if (breathCycle === 1) {
+    // Hold (4s) - starts after 4s inhale
+    clearInterval(breathInterval);
+    breathCircle.style.transition = 'transform 4s linear, opacity 4s linear';
+    breathCircle.style.transform = 'scale(1.8)'; // Keep big
+    breathCircle.style.opacity = '0.7'; // Keep visible
+    breathInterval = setInterval(nextBreathCycle, 4000); // Wait 4s for hold
+    breathCycle = 2;
+  } else if (breathCycle === 2) {
+    // Exhale (6s) - starts after 4s hold
+    clearInterval(breathInterval);
+    breathCircle.style.transition = 'transform 6s ease-in, opacity 6s ease-in';
+    breathCircle.style.transform = 'scale(1)';
+    breathCircle.style.opacity = '0.5';
+    breathInterval = setInterval(nextBreathCycle, 6000); // Wait 6s for exhale
+    breathCycle = 0;
+  }
+}
+
+function stopBreathing() {
+  clearInterval(breathInterval);
+  breathCircle.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+  breathCircle.style.transform = 'scale(1)';
+  breathCircle.style.opacity = '0.5';
+  startBreathBtn.disabled = false;
+  stopBreathBtn.disabled = true;
 }
 
 
-// Botão que inicia a captura
-voiceBtn?.addEventListener("click", () => {
-    if (recognition) recognition.start();
-});
+/* ----------------------- INITIALIZATION AND LISTENERS ----------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Theme initialization
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {
+    applyTheme(true);
+  } else {
+    applyTheme(false);
+  }
 
+  // 2. Language initialization
+  const initialLang = getLang();
+  applyI18n(initialLang);
+
+  // 3. Main Listeners
+  document.getElementById('analyzeBtn').addEventListener('click', handleAnalyze);
+
+  // 4. Modals and Button Logic
+  initVoiceRecognition();
+
+  // Theme Toggle
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const isDark = document.body.classList.contains('dark');
+    applyTheme(!isDark);
+  });
+  
+  // Language Switch Listeners (OLD - Kept to comply with "NÃO REMOVA NADA", though buttons are hidden)
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const newLang = e.currentTarget.getAttribute('data-lang');
+      localStorage.setItem('language', newLang);
+      applyI18n(newLang);
+      handleSearchPro(); // Update list of professionals for new language
+    });
+  });
+
+  // Language Switch Listeners (NEW - Select Dropdown)
+  const languageSelect = document.getElementById('languageSelect');
+  if (languageSelect) {
+      languageSelect.addEventListener('change', (e) => {
+          const newLang = e.target.value;
+          localStorage.setItem('language', newLang);
+          applyI18n(newLang);
+          handleSearchPro(); // Update list of professionals for new language
+      });
+  }
+
+  // Professionals Modal
+  const modalProf = document.getElementById('modalProf');
+  document.getElementById('professionalsBtn').addEventListener('click', () => { modalProf.style.display = 'flex'; handleSearchPro(); });
+  document.getElementById('closeProf').addEventListener('click', () => { modalProf.style.display = 'none'; });
+  document.getElementById('searchPro').addEventListener('click', handleSearchPro);
+  document.getElementById('cityInput').addEventListener('keyup', (e) => { if (e.key === 'Enter') handleSearchPro(); });
+
+  // Danger Modal
+  const modalDanger = document.getElementById('modalDanger');
+  document.getElementById('dangerBtn').addEventListener('click', () => { modalDanger.style.display = 'flex'; });
+  document.getElementById('closeDanger').addEventListener('click', () => { modalDanger.style.display = 'none'; });
+  document.getElementById('closeDangerBtn').addEventListener('click', () => { modalDanger.style.display = 'none'; });
+  document.getElementById('callCvvModal').addEventListener('click', () => { window.location.href = 'tel:188'; });
+  document.getElementById('cvvBtn').addEventListener('click', () => { window.location.href = 'tel:188'; });
+
+  // Breath Modal
+  const modalBreath = document.getElementById('modalBreath');
+  document.getElementById('breathBtn').addEventListener('click', () => { 
+    modalBreath.style.display = 'flex'; 
+    stopBreathing(); // Reset breathing circle
+  });
+  document.getElementById('closeBreath').addEventListener('click', () => { modalBreath.style.display = 'none'; stopBreathing(); });
+  startBreathBtn.addEventListener('click', startBreathing);
+  stopBreathBtn.addEventListener('click', stopBreathing);
+
+  // Pray Modal
+  const modalPray = document.getElementById('modalPray');
+  document.getElementById('prayBtn').addEventListener('click', () => { modalPray.style.display = 'flex'; });
+  document.getElementById('closePray').addEventListener('click', () => { modalPray.style.display = 'none'; });
+  document.getElementById('prayClose').addEventListener('click', () => { modalPray.style.display = 'none'; });
+
+  // Initial call for the phrase
+  updateInitialPhrase();
+});
 </script>
 </body>
 </html>
