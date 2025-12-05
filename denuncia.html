@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S.O.S. Apoio | Protótipo</title>
-    <!-- Carrega o Tailwind CSS para o estilo responsivo e moderno -->
+    <title>S.O.S. Apoio | Denúncia (Autocultar Status)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Define a fonte Inter e aplica um tema escuro padrão para discrição */
@@ -45,7 +44,6 @@
             background-color: #1e1e1e;
         }
     </style>
-    <!-- Ícone de seta para Saída Rápida -->
     <svg style="display: none;">
         <symbol id="icon-exit" viewBox="0 0 24 24">
             <path fill="currentColor" d="M16 13H5v-2h11V4l5 5-5 5zM12 21h7a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-7v2h7v14h-7z"/>
@@ -54,73 +52,66 @@
 </head>
 <body class="h-screen flex flex-col">
 
-    <!-- Botão de Saída Rápida (Panic Button) -->
     <button id="quickExitBtn" class="absolute top-4 left-4 p-2 rounded-full bg-gray-700 text-white shadow-xl z-50 transition-colors hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500">
         <svg class="w-6 h-6" fill="currentColor"><use xlink:href="#icon-exit"></use></svg>
         <span class="sr-only">Sair Rápido</span>
     </button>
 
-    <!-- Cabeçalho (Fixo no Topo) -->
-    <header class="p-4 bg-gray-800 shadow-lg flex justify-between items-center z-10">
+    <header class="p-4 pl-16 bg-gray-800 shadow-lg flex justify-between items-center z-10">
         <h1 class="text-xl font-bold text-gray-100">S.O.S. Apoio</h1>
-        <div class="flex space-x-2">
-            <!-- Botão Denuncie Aqui -->
-            <button id="btnDenuncia" class="px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors shadow-md">
+        <div class="flex space-x-2 flex-wrap justify-end">
+            <button id="btnDenuncia" class="px-3 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors shadow-md">
                 Denuncie Aqui
             </button>
-            <!-- NOVO BOTÃO: Minhas Denúncias / Estatísticas -->
-            <button id="btnStats" class="px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-semibold hover:bg-purple-700 transition-colors shadow-md">
+            <button id="btnStats" class="px-3 py-2 bg-purple-600 text-white rounded-full text-sm font-semibold hover:bg-purple-700 transition-colors shadow-md">
                 Minhas Denúncias
             </button>
-            <!-- Botão Ajuda/Orientação -->
-            <button id="btnAjuda" class="px-4 py-2 bg-gray-600 text-white rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors shadow-md">
+            <button id="btnAjuda" class="px-3 py-2 bg-gray-600 text-white rounded-full text-sm font-semibold hover:bg-gray-700 transition-colors shadow-md">
                 Ajuda
             </button>
         </div>
     </header>
 
-    <!-- Conteúdo Principal (Tela de Emergência Padrão) -->
     <main id="mainScreen" class="flex-grow flex flex-col items-center justify-center p-4">
         <div class="text-center mb-10">
             <h2 class="text-2xl font-bold mb-2">Emergência Imediata</h2>
             <p class="text-gray-400">Pressione e segure para ligar para a Polícia (190).</p>
         </div>
         
-        <!-- Botão Vermelho Central de Emergência -->
         <a id="emergencyBtn" href="tel:190" class="emergency-button mb-8">
             <span class="text-5xl font-extrabold text-white">190</span>
             <span class="text-lg font-bold text-white mt-1">EMERGÊNCIA</span>
         </a>
 
-        <!-- Mensagem de Confirmação (será exibida após o envio da denúncia) -->
-        <div id="statusMessage" class="hidden p-4 mt-8 max-w-sm bg-green-800 rounded-lg shadow-2xl text-center" role="alert">
-            <p class="font-semibold text-lg">Denúncia Enviada!</p>
-            <p class="text-sm">Agradecemos sua colaboração. Sua denúncia será utilizada para fins estatísticos e mapeamento.</p>
+        <div id="statusMessage" class="hidden p-4 mt-8 max-w-sm rounded-lg shadow-2xl text-center" role="alert">
+            <p class="font-semibold text-lg">Status da Ação</p>
+            <p class="text-sm">Detalhes aqui.</p>
         </div>
+
+        <div id="initialStatus" class="p-3 mt-4 text-center rounded-lg bg-yellow-800 text-yellow-300">
+            Conectando ao Firebase...
+        </div>
+         <p id="userIdDisplay" class="text-xs mt-2 text-gray-600 hidden">ID do Usuário: </p>
     </main>
 
-    <!-- Formulário de Denúncia (Inicialmente Oculto) -->
     <div id="reportFormContainer" class="hidden absolute inset-0 bg-gray-900 bg-opacity-95 overflow-y-auto p-6 z-20">
         <div class="max-w-xl mx-auto bg-gray-800 rounded-xl p-6 shadow-2xl">
             <h2 class="text-2xl font-bold text-red-400 mb-4">Denuncie Aqui</h2>
             <p class="text-sm text-gray-400 mb-6 border-b border-gray-700 pb-4">
-                <span class="font-bold text-yellow-400">SIGILO ABSOLUTO:</span> Esta denúncia é coletada para fins estatísticos e de mapeamento. Os campos pessoais são opcionais, e a descrição é sigilosa.
+                <span class="font-bold text-yellow-400">ATENÇÃO:</span> A denúncia será salva de forma segura e sigilosa no nosso servidor Firestore.
             </p>
 
             <form id="denunciaForm" class="space-y-4">
-                <!-- Opção Anônima -->
                 <div class="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                     <label for="anonimo" class="text-lg font-semibold text-white">Denúncia Anônima?</label>
                     <input type="checkbox" id="anonimo" name="anonimo" class="form-checkbox h-5 w-5 text-red-500 rounded focus:ring-red-500 transition duration-150 ease-in-out bg-gray-900 border-gray-600">
                 </div>
 
-                <!-- Nome (Opcional) -->
                 <div id="nomeField">
                     <label for="nome" class="block text-sm font-medium text-gray-400">Nome do Denunciante (Opcional)</label>
                     <input type="text" id="nome" name="nome" class="mt-1 block w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:border-red-500 focus:ring-red-500 text-white">
                 </div>
                 
-                <!-- Gênero e Idade -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label for="sexo" class="block text-sm font-medium text-gray-400">Sexo da Vítima (Estatístico)</label>
@@ -128,7 +119,7 @@
                             <option value="" disabled selected>Selecione</option>
                             <option value="Feminino">Feminino</option>
                             <option value="Masculino">Masculino</option>
-                           
+                            <option value="NaoInformado">Não Informado</option>
                         </select>
                     </div>
                     <div>
@@ -137,16 +128,13 @@
                     </div>
                 </div>
 
-                <!-- Geolocation Status -->
                 <div id="geoStatus" class="p-3 bg-blue-900 text-blue-300 rounded-lg text-sm hidden">
                     Localização obtida: Latitude/Longitude registradas para mapeamento.
                 </div>
                 
-                <!-- Campos Ocultos para Geocoordenadas de Alta Precisão -->
                 <input type="hidden" id="latitude" name="latitude" value="">
                 <input type="hidden" id="longitude" name="longitude" value="">
 
-                <!-- Bairro e Localização (Para Mapeamento) -->
                 <div class="grid grid-cols-3 gap-4">
                     <div class="col-span-3 sm:col-span-1">
                         <label for="estado" class="block text-sm font-medium text-gray-400">Estado</label>
@@ -162,90 +150,52 @@
                     <input type="text" id="bairro" name="bairro" class="mt-1 block w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:border-red-500 focus:ring-red-500 text-white" placeholder="Ex: Centro">
                 </div>
 
-                <!-- Campo de Descrição da Denúncia -->
                 <div>
                     <label for="descricao" class="block text-sm font-medium text-gray-400">Descrição da Denúncia (O mais detalhado possível)</label>
                     <textarea id="descricao" name="descricao" rows="6" required class="mt-1 block w-full p-3 bg-gray-700 border border-gray-600 rounded-md focus:border-red-500 focus:ring-red-500 text-white"></textarea>
                 </div>
 
-                <div id="formStatus" class="mt-4 text-center hidden p-2 rounded-md bg-yellow-900 text-yellow-300">Aguarde... Enviando denúncia.</div>
+                <div id="formStatus" class="mt-4 text-center hidden p-2 rounded-md">Aguarde... Enviando denúncia.</div>
                 
                 <div class="flex justify-between pt-4">
                     <button type="button" id="cancelDenuncia" class="px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors shadow-md">
                         Cancelar
                     </button>
                     <button type="submit" id="submitDenuncia" class="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-xl">
-                        Enviar Denúncia
+                        Salvar Denúncia
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal de Ajuda e Orientação (Inicialmente Oculto) -->
     <div id="helpModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-95 overflow-y-auto p-6 z-30">
         <div class="max-w-xl mx-auto modal rounded-xl p-6 shadow-2xl">
             <h2 class="text-3xl font-bold text-red-500 mb-6 border-b border-gray-700 pb-2">Ajuda e Orientação</h2>
             <p class="text-gray-300 mb-6">Informações vitais sobre como buscar apoio e proteção. Lembre-se, você não está sozinha(o).</p>
 
-            <!-- Categorias de Ajuda -->
-            <div class="space-y-6">
-                
-                <!-- 1. Emergência e Polícia -->
-                <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                    <h3 class="text-xl font-semibold text-yellow-400 mb-2">Emergência Imediata</h3>
-                    <p class="text-sm text-gray-300 mb-2">Acione estes números em caso de perigo imediato ou flagrante.</p>
-                    <ul class="list-disc list-inside text-gray-200 space-y-1 ml-4">
-                        <li>**190 - Polícia Militar:** Violência em andamento.</li>
-                        <li>**197 - Polícia Civil:** Denúncia de crimes (não urgentes).</li>
-                    </ul>
-                </div>
+            <ul class="space-y-4 text-gray-300">
+                <li class="p-3 bg-gray-700 rounded-lg border-l-4 border-red-500">
+                    <strong class="text-red-400">Ligue 190 (Polícia Militar):</strong> Para emergências em andamento ou risco imediato à vida.
+                </li>
+                <li class="p-3 bg-gray-700 rounded-lg border-l-4 border-blue-500">
+                    <strong class="text-blue-400">Ligue 180 (Central de Atendimento à Mulher):</strong> Para denúncias de violência contra a mulher, orientações e encaminhamento.
+                </li>
+                <li class="p-3 bg-gray-700 rounded-lg border-l-4 border-green-500">
+                    <strong class="text-green-400">Conselho Tutelar:</strong> Para casos envolvendo crianças e adolescentes (procure o número local).
+                </li>
+            </ul>
 
-                <!-- 2. Apoio Especializado e Denúncia -->
-                <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                    <h3 class="text-xl font-semibold text-blue-400 mb-2">Apoio Especializado</h3>
-                    <p class="text-sm text-gray-300 mb-2">Órgãos focados em acolhimento e investigação de violência.</p>
-                    <ul class="list-disc list-inside text-gray-200 space-y-1 ml-4">
-                        <li>**Delegacia da Mulher (DEAM):** Para vítimas do sexo feminino.</li>
-                        <li>**Disque 100 (Direitos Humanos):** Denúncias de violência contra crianças, adolescentes, idosos e PCD.</li>
-                        <li>**Conselho Tutelar:** Maus tratos ou negligência envolvendo crianças e adolescentes.</li>
-                        <li>**CREAS:** Centro de Referência Especializado de Assistência Social.</li>
-                    </ul>
-                </div>
-
-                <!-- 3. Apoio Legal e Jurídico -->
-                <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                    <h3 class="text-xl font-semibold text-green-400 mb-2">Amparo Legal</h3>
-                    <p class="text-sm text-gray-300 mb-2">Busca por medidas protetivas e orientação jurídica gratuita.</p>
-                    <ul class="list-disc list-inside text-gray-200 space-y-1 ml-4">
-                        <li>**Defensoria Pública:** Para assistência jurídica gratuita (Lei Maria da Penha, guarda, etc.).</li>
-                        <li>**OAB (Comissões):** Muitas seccionais oferecem auxílio em casos de violência.</li>
-                    </ul>
-                </div>
-
-                <!-- 4. Ajuda Emocional -->
-                <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                    <h3 class="text-xl font-semibold text-pink-400 mb-2">Ajuda Emocional</h3>
-                    <p class="text-sm text-gray-300 mb-2">Recursos para lidar com o trauma e o sofrimento emocional.</p>
-                    <ul class="list-disc list-inside text-gray-200 space-y-1 ml-4">
-                        <li>**CVV (Centro de Valorização da Vida) - Ligue 188:** Conversa confidencial 24h.</li>
-                        <li>**Rede de Psicólogos Voluntários:** Procure por grupos de apoio em seu município.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Botão de Fechar -->
             <button id="closeHelpModal" class="mt-8 w-full py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors shadow-xl">
                 Entendi, Fechar
             </button>
         </div>
     </div>
 
-    <!-- NOVO MODAL: Modal de Estatísticas e Listagem de Denúncias (Inicialmente Oculto) -->
     <div id="statsModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-95 overflow-y-auto p-6 z-30">
         <div class="max-w-3xl mx-auto modal rounded-xl p-6 shadow-2xl">
-            <h2 class="text-3xl font-bold text-purple-400 mb-6 border-b border-gray-700 pb-2">Minhas Denúncias Salvas</h2>
-            <p class="text-gray-300 mb-4">Abaixo estão as denúncias que você registrou para fins estatísticos. Elas estão salvas de forma privada, associadas ao seu usuário.</p>
+            <h2 class="text-3xl font-bold text-purple-400 mb-6 border-b border-gray-700 pb-2">Minhas Denúncias Salvas (Firestore)</h2>
+            <p class="text-gray-300 mb-4">Estas denúncias foram salvas em seu perfil. Apenas você pode visualizá-las.</p>
             
             <div id="statsList" class="space-y-4">
                 <p class="text-center text-gray-500 mt-8">Carregando denúncias...</p>
@@ -257,34 +207,66 @@
         </div>
     </div>
 
-    <!-- Script para Firebase e Lógica do Aplicativo -->
+
     <script type="module">
-        // Importações MANDATÓRIAS do Firebase (usando módulos)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // Adicionadas onSnapshot e query para leitura de dados em tempo real
-        import { getFirestore, collection, addDoc, setLogLevel, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Configurações e Variáveis Globais (MANDATÓRIAS do ambiente Canvas)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let db, auth;
+        // Variáveis globais de Firebase
+        let db;
+        let auth;
         let userId = null;
         let isAuthReady = false;
-        let currentUnsubscribe = null; // Variável para armazenar a função de desinscrição do listener
+        
+        // --- 1. CONFIGURAÇÃO DO AMBIENTE ---
 
+        // Configuração de Fallback / Direta: USA A CONFIGURAÇÃO REAL FORNECIDA PELO USUÁRIO.
+        const FALLBACK_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyA8mUIkIGk-i2RvlrD-_TbLlZJAnOSwgtw",
+            authDomain: "sos-app-287a3.firebaseapp.com",
+            projectId: "sos-app-287a3",
+            storageBucket: "sos-app-287a3.firebasestorage.app",
+            messagingSenderId: "365524443228",
+            appId: "1:365524443228:web:ad9bf99c80ecaa81d58699",
+            measurementId: "G-VTGJGE5SPQ"
+        };
+
+        let firebaseConfig = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // PRIORIZA A CONFIGURAÇÃO INJETADA PELO AMBIENTE (__firebase_config)
+        let configStatus = "connecting";
+        
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+            try {
+                // Tenta parsear a string JSON fornecida pelo ambiente
+                firebaseConfig = JSON.parse(__firebase_config);
+                console.log("Configuração do Firebase carregada do ambiente.");
+            } catch (e) {
+                // Se o JSON for inválido, usa o fallback REAL.
+                console.error("Erro ao fazer parse de __firebase_config (JSON inválido). Usando config de fallback REAL.", e);
+                firebaseConfig = FALLBACK_FIREBASE_CONFIG;
+                configStatus = "using_fallback_parse_error";
+            }
+        } else {
+             // Se a variável global estiver ausente, usa o fallback REAL.
+             console.warn("AVISO: Variável global __firebase_config ausente. Usando configuração de fallback (Hardcoded REAL).");
+             firebaseConfig = FALLBACK_FIREBASE_CONFIG;
+             configStatus = "using_fallback_missing";
+        }
+        
         // Referências DOM
         const btnDenuncia = document.getElementById('btnDenuncia');
         const btnAjuda = document.getElementById('btnAjuda');
-        const btnStats = document.getElementById('btnStats'); // NOVO: Botão de Estatísticas
+        const btnStats = document.getElementById('btnStats');
         const mainScreen = document.getElementById('mainScreen');
         const reportFormContainer = document.getElementById('reportFormContainer');
         const helpModal = document.getElementById('helpModal');
-        const statsModal = document.getElementById('statsModal'); // NOVO: Modal de Estatísticas
-        const statsList = document.getElementById('statsList'); // NOVO: Lista de Denúncias
-        const closeStatsModal = document.getElementById('closeStatsModal'); // NOVO: Botão de fechar do modal de stats
+        const statsModal = document.getElementById('statsModal');
+        const statsList = document.getElementById('statsList');
+        const closeStatsModal = document.getElementById('closeStatsModal');
         const denunciaForm = document.getElementById('denunciaForm');
         const nomeField = document.getElementById('nomeField');
         const anonimoCheckbox = document.getElementById('anonimo');
@@ -292,48 +274,224 @@
         const closeHelpModal = document.getElementById('closeHelpModal');
         const statusMessage = document.getElementById('statusMessage');
         const quickExitBtn = document.getElementById('quickExitBtn');
+        const initialStatusDiv = document.getElementById('initialStatus');
         const formStatus = document.getElementById('formStatus');
+        const userIdDisplay = document.getElementById('userIdDisplay');
 
         // Campos de Geocoordenadas
         const latitudeInput = document.getElementById('latitude');
         const longitudeInput = document.getElementById('longitude');
         const geoStatusDiv = document.getElementById('geoStatus');
 
-        // Configuração do Firebase
-        async function setupFirebase() {
-            try {
-                // Configura o nível de log para debug (necessário para Firestore)
-                setLogLevel('Debug');
-                
-                // Inicializa o app Firebase
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
 
-                // Autenticação
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                // Listener de Estado de Autenticação (IMPORTANTE para garantir o userId)
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        console.log("Firebase Auth OK. User ID:", userId);
-                    } else {
-                        userId = null;
-                        console.log("Usuário deslogado ou anônimo.");
-                    }
-                    isAuthReady = true;
-                });
-            } catch (error) {
-                console.error("Erro ao configurar o Firebase:", error);
+        /**
+         * Atualiza o estado visual de conexão.
+         * @param {'connecting' | 'connected' | 'error' | 'permissions' | 'no_config'} status 
+         * @param {string} message 
+         */
+        function updateStatus(status, message, id = null) {
+            // Garante que o status box esteja visível para a atualização
+            initialStatusDiv.classList.remove('hidden'); 
+            initialStatusDiv.textContent = message;
+            initialStatusDiv.classList.remove('bg-yellow-800', 'bg-green-800', 'bg-red-800', 'bg-orange-800', 'bg-gray-800');
+            
+            if (status === 'connecting') {
+                initialStatusDiv.classList.add('bg-yellow-800');
+            } else if (status === 'connected') {
+                initialStatusDiv.classList.add('bg-green-800');
+                userIdDisplay.textContent = `ID do Usuário: ${id}`;
+                // Garante que o ID do usuário está visível após o sucesso
+                userIdDisplay.classList.remove('hidden'); 
+                btnDenuncia.disabled = false;
+                btnDenuncia.classList.remove('bg-gray-500', 'cursor-not-allowed');
+                btnDenuncia.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            } else if (status === 'error' || status === 'no_config') {
+                initialStatusDiv.classList.add('bg-red-800');
+                userIdDisplay.classList.add('hidden'); // Oculta o ID em caso de erro crítico
+                // Desativa a denúncia se houver falha crítica
+                btnDenuncia.disabled = true;
+                btnDenuncia.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                btnDenuncia.classList.add('bg-gray-500', 'cursor-not-allowed');
+            } else if (status === 'permissions') {
+                initialStatusDiv.classList.add('bg-orange-800');
             }
         }
 
-        // Função para Obter Geolocalização
+        /**
+         * Constrói e retorna a referência da coleção de denúncias privadas do usuário.
+         */
+        function getReportsCollectionRef() {
+            // Caminho privado: /artifacts/{appId}/users/{userId}/denuncias_pessoais
+            const path = `/artifacts/${appId}/users/${userId}/denuncias_pessoais`;
+            return collection(db, path);
+        }
+
+        // 🟢 NOVO: Função para obter a referência da coleção pública (Painel de Visualização)
+        function getPublicReportsCollectionRef() {
+            // Caminho público: /artifacts/{appId}/denuncias_publicas
+            const path = `/artifacts/${appId}/denuncias_publicas`;
+            return collection(db, path);
+        }
+
+        let unsubscribeReports = null;
+        let personalReports = [];
+
+        /**
+         * Configura o listener em tempo real para as denúncias pessoais do usuário.
+         */
+        function setupReportsListener() {
+            if (!db || !isAuthReady || !userId) {
+                return;
+            }
+            
+            // Se já houver um listener, desinscreve para evitar duplicação.
+            if (unsubscribeReports) {
+                 unsubscribeReports();
+            }
+
+            const reportsRef = getReportsCollectionRef();
+            const q = query(reportsRef);
+
+            unsubscribeReports = onSnapshot(q, (snapshot) => {
+                personalReports = [];
+                snapshot.forEach((doc) => {
+                    personalReports.push({ id: doc.id, ...doc.data() });
+                });
+                if (!statsModal.classList.contains('hidden')) {
+                    renderPersonalReports();
+                }
+            }, (error) => {
+                console.error("Erro ao escutar denúncias (Regras de Segurança):", error);
+                // O erro de permissão é o mais comum aqui se as regras estiverem erradas.
+                updateStatus('permissions', "AVISO: Falha ao carregar denúncias. Verifique as regras de segurança do Firestore.", userId);
+                personalReports = [];
+            });
+        }
+
+
+        /**
+         * Renderiza as denúncias pessoais na modal de estatísticas.
+         */
+        function renderPersonalReports() {
+            if (personalReports.length === 0) {
+                statsList.innerHTML = `<p class="text-center text-gray-500 mt-8">Nenhuma denúncia encontrada no servidor.</p>`;
+                return;
+            }
+
+            let htmlContent = '';
+            personalReports.forEach((data) => {
+                // Tenta formatar a data, se for um ISO string válido
+                let dateStr = 'Data Desconhecida';
+                try {
+                    dateStr = new Date(data.timestamp).toLocaleString('pt-BR');
+                } catch (e) {
+                    dateStr = data.timestamp; // Caso o formato não seja reconhecido
+                }
+                
+                htmlContent += `
+                    <div class="bg-gray-700 p-4 rounded-lg shadow-xl border-l-4 border-purple-500">
+                        <p class="text-xs text-gray-400 mb-1">ID Denúncia: ${data.id} | Data: ${dateStr}</p>
+                        <h4 class="text-lg font-semibold text-white mb-2">${data.anonimo ? 'Denúncia Anônima' : data.nomeDenunciante}</h4>
+                        <p class="text-sm text-gray-300"><strong>Local:</strong> ${data.municipio} - ${data.estado}</p>
+                        <p class="text-sm text-gray-300"><strong>Vítima:</strong> ${data.sexo}, ${data.idade} anos.</p>
+                        <p class="mt-3 text-sm italic text-gray-200 border-t border-gray-600 pt-2">${data.descricao}</p>
+                    </div>
+                `;
+            });
+
+            statsList.innerHTML = htmlContent;
+        }
+
+
+        // --- 2. Inicialização e Autenticação ---
+
+        async function initApp() {
+            setLogLevel('debug'); // Ativa logs de debug do Firebase
+            updateStatus('connecting', "Conectando ao Firebase e autenticando...");
+
+            if (!firebaseConfig) {
+                 updateStatus('no_config', "ERRO FATAL: Configuração do Firebase Ausente. Não é possível salvar dados.");
+                 isAuthReady = false;
+                 return; 
+            }
+            
+            // NOVO LOG DE DEBUG: Confirmação da Configuração sendo usada
+            console.log("Configuração FINAL do Firebase sendo usada:", firebaseConfig);
+
+            try {
+                // 1. Inicializa o App, Firestore e Auth usando a config obtida
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                
+                let userCredential = null;
+                
+                // 2. Tenta Autenticação com Token Customizado (se disponível)
+                if (initialAuthToken) {
+                    try {
+                        console.log("Tentando autenticação com Token Customizado...");
+                        userCredential = await signInWithCustomToken(auth, initialAuthToken);
+                        console.log("Sucesso na Autenticação com Token Customizado.");
+                    } catch (e) {
+                        console.warn(`Falha na autenticação Customizada (${e.code}). Tentando Autenticação Anônima como fallback...`);
+                    }
+                } 
+
+                // 3. Se não logou (ou falhou no custom token), tenta o login anônimo
+                if (!userCredential) {
+                    console.log("Tentando Autenticação Anônima...");
+                    userCredential = await signInAnonymously(auth);
+                }
+                
+                // 4. Finaliza o login
+                if (userCredential && userCredential.user) {
+                    userId = userCredential.user.uid;
+                    isAuthReady = true;
+
+                    // Exibe o status de sucesso
+                    updateStatus('connected', "Conexão com Firestore estabelecida com sucesso. Login Anônimo OK.", userId);
+                    
+                    // NOVO: Agenda o ocultamento da mensagem de status após 5 segundos
+                    setTimeout(() => {
+                        // Verifica se a mensagem ainda é de sucesso antes de ocultar
+                        if (initialStatusDiv.textContent.includes("Login Anônimo OK.")) {
+                            initialStatusDiv.classList.add('hidden');
+                        }
+                    }, 5000);
+
+                    // Configura o listener APENAS APÓS a autenticação
+                    setupReportsListener(); 
+                } else {
+                     throw new Error("Falha na Autenticação: Nenhum usuário foi logado.");
+                }
+
+
+            } catch (error) {
+                console.error("ERRO CRÍTICO na Inicialização/Autenticação:", error);
+                
+                let errorMessage = `ERRO CRÍTICO: Falha de conexão. O Firebase retornou o erro: ${error.code || 'Desconhecido'}`;
+                
+                if (error.code === 'auth/configuration-not-found') {
+                    // MENSAGEM CHAVE PARA O USUÁRIO
+                    errorMessage = "ERRO FATAL (AUTH): O Login Anônimo NÃO está ativado no seu Firebase Console. Por favor, ATIVE-O em Authentication > Sign-in method > Anônimo.";
+                } else if (error.code === 'auth/api-key-not-valid') {
+                    errorMessage = "ERRO FATAL (API KEY): A CHAVE DE API REAL É INVÁLIDA.";
+                } else if (error.code === 'permission-denied') {
+                    errorMessage = "ERRO DE PERMISSÃO: A conexão foi feita, mas as REGRAS DE SEGURANÇA impediram o acesso.";
+                } else if (error.code === 'auth/configuration-not-found' || error.code === 'app/invalid-credentials') {
+                    errorMessage = "ERRO FATAL: Configuração do Firebase Incorreta. Verifique se todos os valores (apiKey, authDomain, projectId) são válidos.";
+                }
+                
+                // Mensagem de erro permanece visível
+                updateStatus('error', errorMessage);
+                isAuthReady = false;
+            }
+        }
+
+
+        // --- 3. Lógica de Funções Comuns ---
+
+        // Função para Obter Geocalização
         function getGeolocation() {
             if ("geolocation" in navigator) {
                 geoStatusDiv.textContent = "Tentando obter sua localização para mapeamento...";
@@ -346,124 +504,41 @@
 
                         latitudeInput.value = lat;
                         longitudeInput.value = lon;
-                        
-                        console.log(`Geolocalização obtida: Lat=${lat}, Lon=${lon}`);
+
                         geoStatusDiv.textContent = "Localização obtida: Latitude/Longitude registradas para mapeamento.";
                         geoStatusDiv.classList.remove('bg-red-900');
                         geoStatusDiv.classList.add('bg-blue-900');
-
-                        // NOTA IMPORTANTE: Em um ambiente de produção, aqui seria feita
-                        // uma chamada AJAX (Reverse Geocoding API) para preencher os
-                        // campos 'municipio' e 'estado' automaticamente.
                     },
                     (error) => {
-                        console.warn('Erro ao obter geolocalização:', error.message);
                         latitudeInput.value = '';
                         longitudeInput.value = '';
                         geoStatusDiv.textContent = "Não foi possível obter a localização. Preencha o Estado e Município manualmente.";
                         geoStatusDiv.classList.remove('bg-blue-900');
                         geoStatusDiv.classList.add('bg-red-900');
                     },
-                    {
-                        enableHighAccuracy: false,
-                        timeout: 5000,
-                        maximumAge: 0
-                    }
+                    { enableHighAccuracy: false, timeout: 5000, maximumAge: 0 }
                 );
             } else {
-                console.log("Geolocalização não é suportada por este navegador.");
                 geoStatusDiv.textContent = "Geolocalização não suportada. Preencha todos os campos de endereço.";
                 geoStatusDiv.classList.remove('hidden');
                 geoStatusDiv.classList.add('bg-red-900');
             }
         }
 
-        // Função para buscar e exibir as denúncias em tempo real
-        function fetchReports() {
-            // Garante que a autenticação esteja pronta
-            if (!isAuthReady || !userId) {
-                statsList.innerHTML = `<p class="text-center text-red-500 mt-8">Erro de autenticação. Tente novamente.</p>`;
-                return;
-            }
 
-            const collectionPath = `artifacts/${appId}/users/${userId}/denuncias_estatisticas`;
-            // Cria uma query para buscar todos os documentos do usuário
-            const reportsQuery = query(collection(db, collectionPath));
-
-            // Usa onSnapshot para escutar em tempo real
-            const unsubscribe = onSnapshot(reportsQuery, (snapshot) => {
-                if (snapshot.empty) {
-                    statsList.innerHTML = `<p class="text-center text-gray-500 mt-8">Nenhuma denúncia encontrada ainda.</p>`;
-                    return;
-                }
-
-                let htmlContent = '';
-                snapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    const date = new Date(data.timestamp).toLocaleString('pt-BR');
-                    
-                    htmlContent += `
-                        <div class="bg-gray-700 p-4 rounded-lg shadow-xl border-l-4 border-purple-500">
-                            <p class="text-xs text-gray-400 mb-1">ID da Denúncia: ${doc.id.substring(0, 8)}... | Data: ${date}</p>
-                            <h4 class="text-lg font-semibold text-white mb-2">${data.anonimo ? 'Denúncia Anônima' : data.nomeDenunciante}</h4>
-                            <p class="text-sm text-gray-300"><strong>Local:</strong> ${data.bairro}, ${data.municipio} - ${data.estado} (Lat/Lon: ${data.latitude}/${data.longitude})</p>
-                            <p class="text-sm text-gray-300"><strong>Vítima:</strong> ${data.sexo}, ${data.idade} anos.</p>
-                            <p class="mt-3 text-sm italic text-gray-200 border-t border-gray-600 pt-2">${data.descricao}</p>
-                        </div>
-                    `;
-                });
-
-                statsList.innerHTML = htmlContent;
-            }, (error) => {
-                console.error("Erro ao carregar denúncias:", error);
-                statsList.innerHTML = `<p class="text-center text-red-500 mt-8">Erro ao carregar dados: ${error.message}</p>`;
-            });
-
-            return unsubscribe; // Retorna a função de unsubscribe
-        }
-
-
-        // Funções de Gerenciamento de Visualização
-        function showScreen(screen) {
-            // Se houver um listener ativo, desativa antes de trocar de tela
-            if (currentUnsubscribe) {
-                currentUnsubscribe();
-                currentUnsubscribe = null;
-            }
-
-            mainScreen.classList.add('hidden');
-            reportFormContainer.classList.add('hidden');
-            helpModal.classList.add('hidden');
-            statsModal.classList.add('hidden'); // Oculta o novo modal
-            statusMessage.classList.add('hidden'); // Oculta a mensagem de status sempre que a tela principal é trocada
-            geoStatusDiv.classList.add('hidden'); // Oculta o status da geo ao sair do form
-
-            if (screen === 'main') {
-                mainScreen.classList.remove('hidden');
-            } else if (screen === 'report') {
-                reportFormContainer.classList.remove('hidden');
-                getGeolocation(); // Tenta obter a localização ao abrir o formulário
-            } else if (screen === 'help') {
-                helpModal.classList.remove('hidden');
-            } else if (screen === 'stats') { // NOVO: Tela de Estatísticas
-                statsModal.classList.remove('hidden');
-                currentUnsubscribe = fetchReports(); // Ativa o listener e armazena a função de desinscrição
-            }
-        }
-
-        // Lógica de Envio da Denúncia
+        // Lógica de Envio da Denúncia (SALVA NO FIRESTORE)
         async function submitDenuncia(event) {
             event.preventDefault();
-            
-            if (!isAuthReady || !userId) {
-                console.error("Sistema não pronto. Tente novamente.");
-                formStatus.textContent = "Erro de conexão. Tente novamente.";
-                formStatus.classList.remove('hidden');
+
+            if (!isAuthReady || !db || !userId) {
+                formStatus.textContent = `ERRO: Conexão com o servidor indisponível. Corrija o erro no status de conexão (topo) antes de denunciar.`;
+                formStatus.classList.remove('hidden', 'bg-yellow-900', 'text-yellow-300');
                 formStatus.classList.add('bg-red-900', 'text-red-300');
+                setTimeout(() => formStatus.classList.add('hidden'), 5000);
                 return;
             }
-
-            formStatus.textContent = "Aguarde... Enviando denúncia.";
+            
+            formStatus.textContent = "Aguarde... Enviando denúncia para o servidor.";
             formStatus.classList.remove('hidden', 'bg-red-900', 'text-red-300');
             formStatus.classList.add('bg-yellow-900', 'text-yellow-300');
             
@@ -471,7 +546,7 @@
             const data = {
                 // Dados Estáticos para Mapeamento
                 sexo: formData.get('sexo'),
-                idade: parseInt(formData.get('idade'), 10) || null,
+                idade: parseInt(formData.get('idade'), 10) || 0,
                 bairro: formData.get('bairro') || 'N/A',
                 municipio: formData.get('municipio'),
                 estado: formData.get('estado'),
@@ -481,58 +556,95 @@
                 latitude: formData.get('latitude') || 'N/A',
                 longitude: formData.get('longitude') || 'N/A',
 
-                // Metadados do App e Denúncia
+                // Metadados
                 anonimo: anonimoCheckbox.checked,
                 nomeDenunciante: anonimoCheckbox.checked ? 'Denunciante Anônimo' : (formData.get('nome') || 'Não Informado'),
                 timestamp: new Date().toISOString(),
-                appId: appId,
-                userId: userId,
+                userId: userId, // ID de usuário do Firebase
             };
 
-            // Define o caminho da coleção (privada por padrão, ligada ao userId)
-            const collectionPath = `artifacts/${appId}/users/${userId}/denuncias_estatisticas`;
-
             try {
-                // Tentativa de envio com exponencial backoff
-                const maxRetries = 3;
-                for (let i = 0; i < maxRetries; i++) {
-                    try {
-                        await addDoc(collection(db, collectionPath), data);
-                        break; // Sucesso, sai do loop
-                    } catch (e) {
-                        if (i === maxRetries - 1) throw e; // Se for a última tentativa, propaga o erro
-                        const delay = Math.pow(2, i) * 1000;
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                    }
-                }
+                // 1. SALVAR NA COLEÇÃO PRIVADA (para o próprio usuário - Minhas Denúncias)
+                const privateReportsRef = getReportsCollectionRef();
+                await addDoc(privateReportsRef, data);
                 
+                // 2. 🚨 CRÍTICO: SALVAR NA COLEÇÃO PÚBLICA (para o Painel de Admin) 🚨
+                const publicReportsRef = getPublicReportsCollectionRef();
+                await addDoc(publicReportsRef, data);
+
                 denunciaForm.reset();
                 showScreen('main');
-                statusMessage.classList.remove('hidden'); // Mostra a mensagem de sucesso
-                setTimeout(() => statusMessage.classList.add('hidden'), 5000); // Esconde após 5 segundos
-
+                statusMessage.classList.remove('hidden', 'bg-red-800'); 
+                statusMessage.classList.add('bg-green-800');
+                statusMessage.querySelector('p:nth-child(1)').textContent = 'Denúncia Salva e Encaminhada com Sucesso!';
+                statusMessage.querySelector('p:nth-child(2)').textContent = 'Seus dados foram salvos e encaminhados para a central de monitoramento.';
+                
             } catch (error) {
-                console.error("Erro ao enviar a denúncia:", error);
-                formStatus.textContent = "ERRO: Não foi possível enviar a denúncia. Verifique sua conexão.";
+                console.error("Erro ao salvar a denúncia no Firestore:", error);
+                
+                let errorMsg = `Falha ao salvar. Verifique as permissões.`;
+                if (error.code === 'permission-denied') {
+                    errorMsg = `Falha: Permissão Negada. Cheque as Regras de Segurança.`;
+                }
+
+                statusMessage.classList.remove('hidden', 'bg-green-800'); 
+                statusMessage.classList.add('bg-red-800');
+                statusMessage.querySelector('p:nth-child(1)').textContent = 'ERRO DE SERVIDOR!';
+                statusMessage.querySelector('p:nth-child(2)').textContent = errorMsg;
+                formStatus.textContent = `ERRO: ${errorMsg}`;
                 formStatus.classList.remove('bg-yellow-900', 'text-yellow-300');
                 formStatus.classList.add('bg-red-900', 'text-red-300');
+
             } finally {
-                formStatus.classList.add('hidden');
+                // Esconde as mensagens de status após 5 segundos
+                setTimeout(() => {
+                    statusMessage.classList.add('hidden');
+                    formStatus.classList.add('hidden');
+                }, 5000);
+            }
+        }
+
+
+        // Funções de Gerenciamento de Visualização
+        function showScreen(screen) {
+            // Oculta todas as telas e mensagens
+            // NOTA: initialStatusDiv não é ocultado aqui porque é gerido pelo initApp para persistir erros.
+            mainScreen.classList.add('hidden');
+            reportFormContainer.classList.add('hidden');
+            helpModal.classList.add('hidden');
+            statsModal.classList.add('hidden');
+            statusMessage.classList.add('hidden');
+            geoStatusDiv.classList.add('hidden');
+
+            if (screen === 'main') {
+                mainScreen.classList.remove('hidden');
+            } else if (screen === 'report') {
+                reportFormContainer.classList.remove('hidden');
+                getGeolocation();
+            } else if (screen === 'help') {
+                helpModal.classList.remove('hidden');
+            } else if (screen === 'stats') {
+                statsModal.classList.remove('hidden');
+                if (isAuthReady) {
+                    renderPersonalReports();
+                } else {
+                    statsList.innerHTML = `<p class="text-center text-red-500 mt-8">Não foi possível carregar: Conexão com o servidor falhou. Verifique se o login anônimo está ativo no Firebase.</p>`;
+                }
             }
         }
 
         // Lógica de Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
-            setupFirebase();
 
-            // Alternar anonimato (oculta/exibe o campo Nome)
+            // Inicia o processo de autenticação e conexão com o banco de dados
+            initApp();
+
+            // Alternar anonimato
             anonimoCheckbox.addEventListener('change', (e) => {
                 if (e.target.checked) {
                     nomeField.classList.add('hidden');
-                    document.getElementById('nome').required = false;
                 } else {
                     nomeField.classList.remove('hidden');
-                    document.getElementById('nome').required = false; // Tornamos sempre opcional
                 }
             });
 
@@ -541,14 +653,11 @@
             cancelDenuncia.addEventListener('click', () => showScreen('main'));
             btnAjuda.addEventListener('click', () => showScreen('help'));
             closeHelpModal.addEventListener('click', () => showScreen('main'));
-
-            // NOVO: Botões de navegação para a tela de Estatísticas
             btnStats.addEventListener('click', () => showScreen('stats'));
             closeStatsModal.addEventListener('click', () => showScreen('main'));
 
             // Botão de Saída Rápida (Sair Rápido)
             quickExitBtn.addEventListener('click', () => {
-                // Redireciona para um site neutro (Ex: Google)
                 window.location.href = 'https://www.google.com/search?q=previs%C3%A3o+do+tempo';
             });
 
