@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.O.S. Apoio | Painel de Autoridades</title>
+    <!-- Carrega o Tailwind CSS para o estilo responsivo e moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carrega a biblioteca Tone.js para alertas sonoros -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d; /* Fundo mais escuro para dashboard */
+            color: #e0e0e0; 
+        }
+        .admin-report-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .admin-report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(255, 255, 0, 0.1), 0 4px 6px -2px rgba(255, 255, 0, 0.05);
+        }
+        /* Animação de Alerta */
+        .animate-bounce-custom {
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(-5%);
+                animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+            }
+            50% {
+                transform: translateY(0);
+                animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Cabeçalho do Painel -->
+    <header class="p-4 bg-gray-900 shadow-lg flex justify-between items-center z-10 border-b-2 border-yellow-600">
+        <h1 class="text-2xl font-extrabold text-yellow-400">Painel de Autoridades | Gestão de Denúncias</h1>
+        <p class="text-sm text-gray-400">Monitoramento em Tempo Real - ID do App: <span id="appIdDisplay" class="font-mono text-yellow-500"></span></p>
+    </header>
+
+    <!-- Conteúdo Principal do Painel -->
+    <main class="flex-grow flex flex-col p-6 overflow-y-auto">
+
+        <!-- Alerta de Nova Denúncia (Oculto por padrão) -->
+        <div id="newReportAlert" class="hidden fixed top-4 right-4 p-4 bg-red-800 text-white font-bold rounded-lg shadow-2xl z-50 animate-bounce-custom">
+            &#9888; NOVA DENÚNCIA CHEGOU! &#9888;
+        </div>
+
+        <!-- Filtros de Denúncia -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 bg-gray-800 p-4 rounded-xl shadow-inner mb-6 border border-gray-700">
+            <!-- Filtro de Estado -->
+            <div>
+                <label for="filterEstado" class="block text-xs font-medium text-gray-400 mb-1">Estado</label>
+                <select id="filterEstado" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm">
+                    <option value="">Todos</option>
+                    <!-- Opções serão preenchidas dinamicamente -->
+                </select>
+            </div>
+            <!-- Filtro de Município -->
+            <div>
+                <label for="filterMunicipio" class="block text-xs font-medium text-gray-400 mb-1">Município</label>
+                <select id="filterMunicipio" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm">
+                    <option value="">Todos</option>
+                    <!-- Opções serão preenchidas dinamicamente -->
+                </select>
+            </div>
+            <!-- Filtro de Sexo -->
+            <div>
+                <label for="filterSexo" class="block text-xs font-medium text-gray-400 mb-1">Sexo</label>
+                <select id="filterSexo" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm">
+                    <option value="">Todos</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            <!-- Filtro de Idade Mínima -->
+            <div>
+                <label for="filterIdadeMin" class="block text-xs font-medium text-gray-400 mb-1">Idade Mín.</label>
+                <input type="number" id="filterIdadeMin" placeholder="0" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm">
+            </div>
+            <!-- Filtro de Idade Máxima -->
+            <div>
+                <label for="filterIdadeMax" class="block text-xs font-medium text-gray-400 mb-1">Idade Máx.</label>
+                <input type="number" id="filterIdadeMax" placeholder="99" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white text-sm">
+            </div>
+        </div>
+
+        <!-- Listagem de Denúncias -->
+        <div class="flex justify-between items-center text-lg font-semibold text-gray-300 mb-3 border-b border-gray-700 pb-2">
+            <span id="reportCount">Total de Denúncias Filtradas: 0</span>
+            <span id="totalReportsCount" class="text-sm text-gray-500">Total Geral: 0</span>
+        </div>
+        
+        <div id="adminReportList" class="space-y-4 flex-grow">
+            <p class="text-center text-gray-500 mt-8">Aguardando dados de denúncias públicas...</p>
+        </div>
+    </main>
+
+
+    <!-- Script para Firebase e Lógica do Painel -->
+    <script type="module">
+        // Importações MANDATÓRIAS do Firebase (usando módulos)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // onSnapshot e query são cruciais para monitoramento em tempo real
+        import { getFirestore, collection, setLogLevel, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variáveis de Ambiente
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth;
+        let isAuthReady = false;
+        let previousReportCount = 0; // Para o alerta de nova denúncia
+        let allReportsData = []; // Cache dos dados brutos para filtragem local
+
+        // Referências DOM e Filtros
+        const adminReportList = document.getElementById('adminReportList');
+        const newReportAlert = document.getElementById('newReportAlert');
+        const reportCountSpan = document.getElementById('reportCount');
+        const totalReportsCount = document.getElementById('totalReportsCount');
+        const appIdDisplay = document.getElementById('appIdDisplay');
+
+        const filterEstado = document.getElementById('filterEstado');
+        const filterMunicipio = document.getElementById('filterMunicipio');
+        const filterSexo = document.getElementById('filterSexo');
+        const filterIdadeMin = document.getElementById('filterIdadeMin');
+        const filterIdadeMax = document.getElementById('filterIdadeMax');
+        
+        // Inicializa o som de alerta (um Tone.js Synth)
+        const synth = new Tone.Synth().toDestination();
+
+
+        // Configuração do Firebase
+        async function setupFirebase() {
+            try {
+                setLogLevel('Debug');
+                
+                appIdDisplay.textContent = appId; // Exibe o ID do App
+
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Autenticação (simulando acesso administrativo)
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        console.log("Painel de Autoridades Autenticado. User ID:", user.uid);
+                    } else {
+                        console.warn("Usuário anônimo. Em um sistema real, o acesso seria negado.");
+                    }
+                    isAuthReady = true;
+                    fetchAdminReports(); // Inicia a busca de dados após a autenticação
+                    setupFilterListeners();
+                });
+            } catch (error) {
+                console.error("Erro ao configurar o Firebase:", error);
+            }
+        }
+
+        // Preenche os filtros (Estado/Município) com base nos dados disponíveis
+        function populateFilters(reports) {
+            const estados = new Set();
+            const municipios = new Set();
+
+            reports.forEach(report => {
+                if (report.estado) estados.add(report.estado);
+                if (report.municipio) municipios.add(report.municipio);
+            });
+
+            // Limpa e preenche o filtro de Estado (mantendo o valor selecionado se existir)
+            const selectedEstado = filterEstado.value;
+            filterEstado.innerHTML = '<option value="">Todos</option>' + 
+                Array.from(estados).map(e => `<option value="${e}" ${e === selectedEstado ? 'selected' : ''}>${e}</option>`).join('');
+            
+            // Limpa e preenche o filtro de Município
+            const selectedMunicipio = filterMunicipio.value;
+            filterMunicipio.innerHTML = '<option value="">Todos</option>' + 
+                Array.from(municipios).map(m => `<option value="${m}" ${m === selectedMunicipio ? 'selected' : ''}>${m}</option>`).join('');
+        }
+
+        // Função principal de renderização e filtragem
+        function renderReports(reports) {
+            allReportsData = reports;
+            const estado = filterEstado.value;
+            const municipio = filterMunicipio.value;
+            const sexo = filterSexo.value;
+            const idadeMin = parseInt(filterIdadeMin.value) || 0;
+            const idadeMax = parseInt(filterIdadeMax.value) || 999;
+
+            // 1. Filtragem Cliente-Side 
+            const filteredReports = reports.filter(data => {
+                // Filtro por Estado
+                if (estado && data.estado !== estado) return false;
+                // Filtro por Município
+                if (municipio && data.municipio !== municipio) return false;
+                // Filtro por Sexo
+                if (sexo && data.sexo !== sexo) return false;
+                // Filtro por Idade (Range)
+                if (data.idade < idadeMin || data.idade > idadeMax) return false;
+
+                return true;
+            });
+
+            // 2. Renderização
+            if (filteredReports.length === 0) {
+                adminReportList.innerHTML = `<p class="text-center text-gray-500 mt-8">Nenhuma denúncia corresponde aos filtros.</p>`;
+            } else {
+                adminReportList.innerHTML = filteredReports.map(data => {
+                    const date = new Date(data.timestamp).toLocaleString('pt-BR');
+                    return `
+                        <div class="admin-report-card bg-gray-700 p-4 rounded-xl shadow-lg border-l-4 border-yellow-500 hover:bg-gray-600">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="text-xl font-bold text-yellow-300">CASO #${data.id.substring(0, 6)}</h4>
+                                <span class="text-xs text-gray-400">Recebido em: ${date}</span>
+                            </div>
+                            <div class="grid grid-cols-2 text-sm text-gray-300 border-b border-gray-600 pb-2 mb-2">
+                                <p><strong>Local:</strong> ${data.bairro}, ${data.municipio} - ${data.estado}</p>
+                                <p><strong>Vítima (Estat.):</strong> ${data.sexo} (${data.idade} anos)</p>
+                                <p class="col-span-2"><strong>Denunciante:</strong> ${data.anonimo ? 'ANÔNIMO' : data.nomeDenunciante}</p>
+                            </div>
+                            <p class="text-base text-white mt-2 font-mono whitespace-pre-wrap">
+                                <strong>Descrição do Incidente:</strong><br>${data.descricao}
+                            </p>
+                            <p class="text-xs text-right text-gray-500 mt-2">Lat/Lon: ${data.latitude}/${data.longitude}</p>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            reportCountSpan.textContent = `Total de Denúncias Filtradas: ${filteredReports.length}`;
+            totalReportsCount.textContent = `Total Geral: ${reports.length}`;
+        }
+
+        // Função para buscar denúncias em tempo real para o Painel Admin
+        function fetchAdminReports() {
+            if (!isAuthReady) {
+                adminReportList.innerHTML = `<p class="text-center text-red-500 mt-8">Aguardando autenticação...</p>`;
+                return;
+            }
+
+            // Coleção pública para autoridades
+            const collectionPath = `artifacts/${appId}/public/data/denuncias_para_autoridades`;
+            const reportsQuery = query(collection(db, collectionPath));
+
+            onSnapshot(reportsQuery, (snapshot) => {
+                const reports = [];
+                snapshot.docs.forEach(doc => {
+                    reports.push({ ...doc.data(), id: doc.id });
+                });
+
+                // 1. Alerta Sonoro e Visual (apenas após o carregamento inicial)
+                if (previousReportCount > 0 && reports.length > previousReportCount) {
+                    try {
+                        // Inicia o contexto de áudio se ainda não estiver rodando (necessário devido a restrições do navegador)
+                        if (Tone.context.state !== 'running') {
+                            Tone.start();
+                        }
+                        synth.triggerAttackRelease("G4", "8n");
+                        newReportAlert.classList.remove('hidden');
+                        setTimeout(() => newReportAlert.classList.add('hidden'), 5000);
+                    } catch (e) {
+                        console.warn("Erro ao tocar som.", e);
+                    }
+                }
+                previousReportCount = reports.length;
+
+                // 2. Preenche os filtros disponíveis
+                populateFilters(reports);
+
+                // 3. Renderiza os relatórios com filtros aplicados
+                renderReports(reports);
+
+            }, (error) => {
+                console.error("Erro ao carregar denúncias do Admin:", error);
+                adminReportList.innerHTML = `<p class="text-center text-red-500 mt-8">Erro ao carregar dados: ${error.message}</p>`;
+            });
+        }
+
+        // Adiciona listeners para os filtros
+        function setupFilterListeners() {
+            [filterEstado, filterMunicipio, filterSexo, filterIdadeMin, filterIdadeMax].forEach(filter => {
+                filter.addEventListener('change', () => renderReports(allReportsData));
+                filter.addEventListener('input', () => renderReports(allReportsData)); // Para campos de texto/número
+            });
+        }
+        
+        // Inicia o setup
+        document.addEventListener('DOMContentLoaded', setupFirebase);
+
+    </script>
+</body>
+</html>
