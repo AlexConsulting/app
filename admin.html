@@ -9,10 +9,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* Fundo claro para dashboard */
+            background-color: #f0f4f8; 
         }
         .header-panel {
-            background-color: #3b82f6; /* Azul primário */
+            background-color: #3b82f6; 
             color: white;
         }
         .card {
@@ -21,16 +21,15 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .data-value {
-            font-size: 2.5rem; /* Aumenta o tamanho dos números */
+            font-size: 2.5rem; 
             font-weight: 800;
         }
-        /* 🚨 NOVO: ANIMAÇÃO DE PISCAR PARA ALERTAS 🚨 */
+        /* 🚨 ALERTA VISUAL: ANIMAÇÃO DE PISCAR 🚨 */
         @keyframes blink {
             0%, 49% { background-color: #ffcccc; } /* Vermelho claro */
             50%, 100% { background-color: transparent; }
         }
         .blinking-row {
-            /* Aplica a animação, dura 0.5s, step-end para transição imediata, infinito */
             animation: blink 0.5s step-end infinite;
         }
     </style>
@@ -134,6 +133,25 @@
                         <p id="detailDescription" class="text-base whitespace-pre-wrap p-3 bg-gray-100 rounded-md border"></p>
                     </div>
                 </div>
+
+                <div class="p-4 bg-gray-100 rounded-lg space-y-4 border-t mt-4">
+                    <h3 class="text-lg font-bold text-gray-800">Ações Administrativas</h3>
+                    
+                    <div>
+                        <label for="adminStatus" class="block text-sm font-semibold text-gray-500 mb-1">Status de Tratamento</label>
+                        <select id="adminStatus" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800">
+                            </select>
+                    </div>
+
+                    <div>
+                        <label for="adminNotes" class="block text-sm font-semibold text-gray-500 mb-1">Notas do Administrador/Encaminhamento</label>
+                        <textarea id="adminNotes" rows="4" placeholder="Registre o histórico de análise e o órgão para o qual foi encaminhada." class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-800"></textarea>
+                    </div>
+                    
+                    <button id="saveAdminActionBtn" class="w-full px-4 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors">
+                        Salvar Ação
+                    </button>
+                </div>
             </div>
             
             <div class="p-4 bg-gray-50 border-t flex justify-end">
@@ -144,9 +162,10 @@
     <audio id="newReportAudio" src="alerta.mp3" preload="auto"></audio>
 
     <script type="module">
+        // 🚨 NOVO IMPORT: doc e updateDoc para salvar o status 🚨
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, query, onSnapshot, orderBy, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, onSnapshot, orderBy, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- 1. CONFIGURAÇÃO (DEVE SER A MESMA USADA NO APP DE DENÚNCIA) ---
         const FIREBASE_CONFIG = {
@@ -159,9 +178,17 @@
             measurementId: "G-VTGJGE5SPQ"
         };
 
-        const APP_ID = 'default-app-id'; // Deve ser o mesmo APP_ID usado no app de denúncia.
-        const ADMIN_TOKEN = null; // Token de autenticação customizado para administradores/autoridades.
+        const APP_ID = 'default-app-id'; 
+        const ADMIN_TOKEN = null; 
 
+        // 🚨 NOVO: Opções de Status 🚨
+        const STATUS_OPTIONS = [
+            "Pendente",
+            "Em Análise",
+            "Encaminhada",
+            "Concluída/Arquivada"
+        ];
+        
         // --- 2. REFERÊNCIAS DOM ---
         const totalDenunciasDiv = document.getElementById('totalDenuncias');
         const mediaIdadeDiv = document.getElementById('mediaIdade');
@@ -170,20 +197,23 @@
         const filterEstado = document.getElementById('filterEstado');
         const filterMunicipio = document.getElementById('filterMunicipio');
         const filterBairro = document.getElementById('filterBairro');
-        // Referências DOM da Modal de Detalhes
         const detailsModal = document.getElementById('detailsModal');
         const closeDetailsModal = document.getElementById('closeDetailsModal');
         const closeDetailsModalBottom = document.getElementById('closeDetailsModalBottom');
-        // 🚨 NOVO: Referência DOM do Áudio 🚨
         const newReportAudio = document.getElementById('newReportAudio');
+        
+        // 🚨 NOVO: Referências para Ações Administrativas 🚨
+        const adminStatusSelect = document.getElementById('adminStatus');
+        const adminNotesTextarea = document.getElementById('adminNotes');
+        const saveAdminActionBtn = document.getElementById('saveAdminActionBtn');
 
 
         // --- 3. VARIÁVEIS DE ESTADO ---
         let db;
         let auth;
         let unsubscribe = null; 
-        let allReportsData = []; // Armazena a lista completa de denúncias
-        let firstLoad = true; // Flag para ignorar alertas no primeiro carregamento.
+        let allReportsData = []; 
+        let firstLoad = true; 
 
 
         // --- 4. FUNÇÃO DE INICIALIZAÇÃO ---
@@ -192,14 +222,16 @@
                 const app = initializeApp(FIREBASE_CONFIG);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                
+                // Preenche o seletor de status (só precisa ser feito uma vez)
+                adminStatusSelect.innerHTML = STATUS_OPTIONS.map(status => 
+                    `<option value="${status}">${status}</option>`
+                ).join('');
 
-                // Autenticação: Necessária para garantir que APENAS autoridades acessem o painel.
                 if (ADMIN_TOKEN) {
                     await signInWithCustomToken(auth, ADMIN_TOKEN);
-                    console.log("Autenticação de administrador bem-sucedida com Token Customizado.");
                     startRealtimeListener();
                 } else {
-                    console.warn("Nenhum token customizado fornecido. O listener de dados depende de REGRAS DE SEGURANÇA que permitam leitura pública (ou autenticada) da coleção.");
                     startRealtimeListener(); 
                 }
                 
@@ -212,21 +244,15 @@
         // --- 5. FUNÇÃO DE OBTENÇÃO DE DADOS (LISTENER EM TEMPO REAL) ---
 
         function getPublicReportsCollectionRef() {
-            // Coleção centralizada para visualização
             const path = `/artifacts/${APP_ID}/denuncias_publicas`;
             return collection(db, path);
         }
 
-        /**
-         * 🚨 NOVO: Tenta tocar o áudio de alerta. 🚨
-         * Nota: Navegadores modernos podem bloquear áudio se não houver interação do usuário.
-         */
         function playNewReportSound() {
             if (newReportAudio) {
                 newReportAudio.load();
                 newReportAudio.play().catch(error => {
-                    console.warn("Falha ao tocar o áudio (pode exigir interação do usuário):", error);
-                    // O alerta sonoro pode falhar se o usuário não tiver interagido com a página
+                    console.warn("Falha ao tocar o áudio:", error);
                 });
             }
         }
@@ -234,16 +260,16 @@
 
         function startRealtimeListener() {
             if (unsubscribe) {
-                unsubscribe(); // Cancela o listener anterior
+                unsubscribe(); 
             }
 
             const reportsRef = getPublicReportsCollectionRef();
-            let q = query(reportsRef, orderBy("timestamp", "desc")); // Ordena pela mais recente
+            // 🚨 NOVO: Garante que "status" exista para ordenar.
+            let q = query(reportsRef, orderBy("timestamp", "desc")); 
 
-            // Adiciona filtros se os campos não estiverem vazios
             const estado = filterEstado.value.trim().toUpperCase();
             const municipio = filterMunicipio.value.trim();
-            const bairro = filterBairro.value.trim();
+            // ... (Filtros de estado/município)
 
             if (estado) {
                 q = query(q, where("estado", "==", estado));
@@ -251,68 +277,61 @@
             if (municipio) {
                 q = query(q, where("municipio", "==", municipio));
             }
-            // Filtrar por bairro: Adicione o filtro abaixo se tiver um índice composto no Firestore
-            // if (bairro) {
-            //     q = query(q, where("bairro", "==", bairro));
-            // }
 
             unsubscribe = onSnapshot(q, (snapshot) => {
                 const currentReports = [];
                 let totalIdades = 0;
                 let anonimasCount = 0;
-                // 🚨 NOVO: Conjunto para armazenar IDs das denúncias recém-adicionadas 🚨
                 let newReportIds = new Set(); 
 
-                // 1. Detecção de Novas Denúncias (DOC CHANGES)
+                // Detecção de Novas Denúncias
                 snapshot.docChanges().forEach((change) => {
-                    // Verifica se foi adicionado e se NÃO é o carregamento inicial (primeira vez)
                     if (change.type === "added" && !firstLoad) {
                         newReportIds.add(change.doc.id);
-                        console.log("NOVA DENÚNCIA DETECTADA:", change.doc.id);
                     }
                 });
 
 
-                // 2. Processamento normal dos dados (para estatísticas e lista)
+                // Processamento de dados
                 snapshot.forEach((doc) => {
-                    const data = { id: doc.id, ...doc.data() };
+                    const data = { 
+                        id: doc.id, 
+                        // 🚨 Adiciona status default caso não exista 🚨
+                        status: STATUS_OPTIONS[0],
+                        adminNotes: '',
+                        ...doc.data() 
+                    };
                     currentReports.push(data);
 
-                    // Cálculo de Estatísticas
                     totalIdades += data.idade || 0;
                     if (data.anonimo) {
                         anonimasCount++;
                     }
                 });
                 
-                // Armazena a lista de denúncias completa
                 allReportsData = currentReports; 
 
-                // Atualiza Cards de Estatísticas
+                // Atualiza Cards
                 const total = allReportsData.length;
                 totalDenunciasDiv.textContent = total.toLocaleString('pt-BR');
-                
                 const mediaIdade = total > 0 ? (totalIdades / total).toFixed(1) : '0';
                 mediaIdadeDiv.textContent = mediaIdade;
-
                 const percentualAnonimas = total > 0 ? ((anonimasCount / total) * 100).toFixed(0) : '0';
                 percentualAnonimasDiv.textContent = `${percentualAnonimas}%`;
 
-                // 3. Renderiza a Lista/Tabela, passando os novos IDs
+                // Renderiza Lista
                 renderOcorrenciasList(allReportsData, newReportIds);
                 
-                // 4. Se houver novas denúncias, dispara o alerta sonoro
                 if (newReportIds.size > 0) {
                     playNewReportSound();
                 }
 
-                // 5. Marca o primeiro carregamento como concluído
                 firstLoad = false;
 
 
             }, (error) => {
                 console.error("Erro ao carregar denúncias:", error);
-                ocorrenciasListDiv.innerHTML = `<p class="text-red-600 text-center">ERRO DE ACESSO: Verifique as Regras de Segurança do Firestore para a coleção pública.</p>`;
+                ocorrenciasListDiv.innerHTML = `<p class="text-red-600 text-center">ERRO DE ACESSO: Verifique as Regras de Segurança do Firestore.</p>`;
             });
         }
 
@@ -330,10 +349,10 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Local (M/E)</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vítima (I/S)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição / Ação</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ação</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -347,29 +366,37 @@
                     dateStr = data.timestamp;
                 }
 
-                const statusColor = data.anonimo ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800';
+                // Determina a cor do status de tratamento
+                let statusBadge = '';
+                let statusColorClass = 'bg-gray-100 text-gray-800'; // Default
+                const status = data.status || STATUS_OPTIONS[0]; // Pega o status ou usa Pendente
+
+                if (status === 'Pendente') statusColorClass = 'bg-red-100 text-red-800';
+                else if (status === 'Em Análise') statusColorClass = 'bg-yellow-100 text-yellow-800';
+                else if (status === 'Encaminhada') statusColorClass = 'bg-blue-100 text-blue-800';
+                else if (status === 'Concluída/Arquivada') statusColorClass = 'bg-green-100 text-green-800';
+
+                statusBadge = `
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColorClass}">
+                        ${status}
+                    </span>
+                `;
                 
-                // 🚨 NOVO: Aplica a classe de piscar se o ID estiver no Set 🚨
                 const isNew = newReportIds.has(data.id);
                 const rowClasses = isNew ? 'blinking-row' : '';
 
                 htmlContent += `
                     <tr id="report-row-${data.id}" class="${rowClasses}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${dateStr}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">${statusBadge}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${data.municipio} - ${data.estado}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${data.idade} anos, ${data.sexo}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">
-                                ${data.anonimo ? 'ANÔNIMO' : 'COM NOME'}
-                            </span>
-                        </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
                             <button onclick="viewDetails('${data.id}')" class="text-blue-600 hover:text-blue-900 font-medium">Ver Detalhes</button>
                         </td>
                     </tr>
                 `;
                 
-                // 🚨 NOVO: Agenda a remoção da classe de piscar após 15 segundos 🚨
                 if (isNew) {
                     setTimeout(() => {
                         const row = document.getElementById(`report-row-${data.id}`);
@@ -388,10 +415,9 @@
             ocorrenciasListDiv.innerHTML = htmlContent;
         }
         
-        // --- 7. IMPLEMENTAÇÃO DA MODAL DE DETALHES (INALTERADA) ---
+        // --- 7. IMPLEMENTAÇÃO DA MODAL DE DETALHES E AÇÃO ---
 
         window.viewDetails = (reportId) => {
-            // Encontra a denúncia correspondente no array armazenado
             const report = allReportsData.find(r => r.id === reportId);
             
             if (!report) {
@@ -399,7 +425,9 @@
                 return;
             }
 
-            // Função auxiliar para formatação de data
+            // 🚨 NOVO: Armazena o ID no elemento da modal para a função de salvar 🚨
+            detailsModal.dataset.reportId = report.id; 
+
             let dateStr = 'N/A';
             try {
                 dateStr = new Date(report.timestamp).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
@@ -407,7 +435,7 @@
                 dateStr = report.timestamp;
             }
 
-            // Preenche os elementos da modal com os dados do relatório
+            // Preenchimento dos dados do denunciante (início da modal)
             document.getElementById('detailId').textContent = report.id;
             document.getElementById('detailDate').textContent = dateStr;
             document.getElementById('detailName').textContent = report.nomeDenunciante;
@@ -418,32 +446,73 @@
             document.getElementById('detailVictimAge').textContent = `${report.idade} anos`;
             document.getElementById('detailDescription').textContent = report.descricao;
             
-            // Exibe a modal
+            // 🚨 NOVO: Preenchimento dos campos administrativos 🚨
+            // Define o status atual (ou Pendente como default)
+            adminStatusSelect.value = report.status || STATUS_OPTIONS[0]; 
+            // Preenche as notas do admin (se existirem)
+            adminNotesTextarea.value = report.adminNotes || '';
+            
             detailsModal.classList.remove('hidden');
         };
+        
+        // 🚨 NOVO: FUNÇÃO PARA SALVAR O STATUS E AS NOTAS 🚨
+        async function saveAdminAction() {
+            const reportId = detailsModal.dataset.reportId;
+            if (!reportId) {
+                alert("Erro: ID da denúncia não encontrado para salvar.");
+                return;
+            }
+
+            const newStatus = adminStatusSelect.value;
+            const newNotes = adminNotesTextarea.value;
+            
+            const reportsCollectionRef = getPublicReportsCollectionRef();
+            const docRef = doc(reportsCollectionRef, reportId);
+
+            // Confirmação antes de salvar
+            if (!confirm(`Confirmar a atualização do status para "${newStatus}"?`)) {
+                return;
+            }
+
+            try {
+                await updateDoc(docRef, {
+                    status: newStatus,
+                    adminNotes: newNotes,
+                    // Adiciona um timestamp para rastrear a última modificação do admin
+                    lastAdminUpdate: Date.now() 
+                });
+
+                alert("Status e notas salvas com sucesso!");
+                detailsModal.classList.add('hidden'); 
+
+            } catch (error) {
+                console.error("Erro ao salvar ações do administrador:", error);
+                alert("Erro ao salvar: Verifique suas Regras de Segurança e conexão.");
+            }
+        }
+
 
         // --- 8. LISTENERS GERAIS ---
 
         document.addEventListener('DOMContentLoaded', () => {
             initDashboard();
 
-            // Listeners para os filtros (recarregam o listener em tempo real)
             filterEstado.addEventListener('change', startRealtimeListener);
             filterMunicipio.addEventListener('change', startRealtimeListener);
             filterBairro.addEventListener('change', startRealtimeListener);
 
-            // Listeners para fechar a modal de detalhes
+            // Listeners da Modal
             const closeModal = () => detailsModal.classList.add('hidden');
-
             closeDetailsModal.addEventListener('click', closeModal);
             closeDetailsModalBottom.addEventListener('click', closeModal);
-
-            // Fechar modal ao pressionar ESC
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && !detailsModal.classList.contains('hidden')) {
                     closeModal();
                 }
             });
+            
+            // 🚨 NOVO: Listener para o botão Salvar Ação 🚨
+            saveAdminActionBtn.addEventListener('click', saveAdminAction);
         });
 
     </script>
