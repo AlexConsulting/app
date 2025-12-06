@@ -24,6 +24,15 @@
             font-size: 2.5rem; /* Aumenta o tamanho dos números */
             font-weight: 800;
         }
+        /* 🚨 NOVO: ANIMAÇÃO DE PISCAR PARA ALERTAS 🚨 */
+        @keyframes blink {
+            0%, 49% { background-color: #ffcccc; } /* Vermelho claro */
+            50%, 100% { background-color: transparent; }
+        }
+        .blinking-row {
+            /* Aplica a animação, dura 0.5s, step-end para transição imediata, infinito */
+            animation: blink 0.5s step-end infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -132,13 +141,14 @@
             </div>
         </div>
     </div>
+    <audio id="newReportAudio" src="alerta.mp3" preload="auto"></audio>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, query, onSnapshot, orderBy, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- 1. CONFIGURAÇÃO (DEVE SER A MESMA USADA NO APP DE DENÚNCIA) ---
-        // ATENÇÃO: Use a configuração real do seu projeto Firebase aqui.
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyA8mUIkIGk-i2RvlrD-_TbLlZJAnOSwgtw", // Substitua pela sua chave
             authDomain: "sos-app-287a3.firebaseapp.com",
@@ -164,12 +174,17 @@
         const detailsModal = document.getElementById('detailsModal');
         const closeDetailsModal = document.getElementById('closeDetailsModal');
         const closeDetailsModalBottom = document.getElementById('closeDetailsModalBottom');
+        // 🚨 NOVO: Referência DOM do Áudio 🚨
+        const newReportAudio = document.getElementById('newReportAudio');
+
 
         // --- 3. VARIÁVEIS DE ESTADO ---
         let db;
         let auth;
         let unsubscribe = null; 
         let allReportsData = []; // Armazena a lista completa de denúncias
+        let firstLoad = true; // Flag para ignorar alertas no primeiro carregamento.
+
 
         // --- 4. FUNÇÃO DE INICIALIZAÇÃO ---
         async function initDashboard() {
@@ -202,6 +217,21 @@
             return collection(db, path);
         }
 
+        /**
+         * 🚨 NOVO: Tenta tocar o áudio de alerta. 🚨
+         * Nota: Navegadores modernos podem bloquear áudio se não houver interação do usuário.
+         */
+        function playNewReportSound() {
+            if (newReportAudio) {
+                newReportAudio.load();
+                newReportAudio.play().catch(error => {
+                    console.warn("Falha ao tocar o áudio (pode exigir interação do usuário):", error);
+                    // O alerta sonoro pode falhar se o usuário não tiver interagido com a página
+                });
+            }
+        }
+
+
         function startRealtimeListener() {
             if (unsubscribe) {
                 unsubscribe(); // Cancela o listener anterior
@@ -230,7 +260,20 @@
                 const currentReports = [];
                 let totalIdades = 0;
                 let anonimasCount = 0;
+                // 🚨 NOVO: Conjunto para armazenar IDs das denúncias recém-adicionadas 🚨
+                let newReportIds = new Set(); 
 
+                // 1. Detecção de Novas Denúncias (DOC CHANGES)
+                snapshot.docChanges().forEach((change) => {
+                    // Verifica se foi adicionado e se NÃO é o carregamento inicial (primeira vez)
+                    if (change.type === "added" && !firstLoad) {
+                        newReportIds.add(change.doc.id);
+                        console.log("NOVA DENÚNCIA DETECTADA:", change.doc.id);
+                    }
+                });
+
+
+                // 2. Processamento normal dos dados (para estatísticas e lista)
                 snapshot.forEach((doc) => {
                     const data = { id: doc.id, ...doc.data() };
                     currentReports.push(data);
@@ -242,7 +285,7 @@
                     }
                 });
                 
-                // Armazena a lista de denúncias completa para ser usada pelo modal de detalhes
+                // Armazena a lista de denúncias completa
                 allReportsData = currentReports; 
 
                 // Atualiza Cards de Estatísticas
@@ -255,8 +298,17 @@
                 const percentualAnonimas = total > 0 ? ((anonimasCount / total) * 100).toFixed(0) : '0';
                 percentualAnonimasDiv.textContent = `${percentualAnonimas}%`;
 
-                // Renderiza a Lista/Tabela de Ocorrências
-                renderOcorrenciasList(allReportsData);
+                // 3. Renderiza a Lista/Tabela, passando os novos IDs
+                renderOcorrenciasList(allReportsData, newReportIds);
+                
+                // 4. Se houver novas denúncias, dispara o alerta sonoro
+                if (newReportIds.size > 0) {
+                    playNewReportSound();
+                }
+
+                // 5. Marca o primeiro carregamento como concluído
+                firstLoad = false;
+
 
             }, (error) => {
                 console.error("Erro ao carregar denúncias:", error);
@@ -266,7 +318,7 @@
 
         // --- 6. FUNÇÃO DE RENDERIZAÇÃO DA LISTA ---
 
-        function renderOcorrenciasList(reports) {
+        function renderOcorrenciasList(reports, newReportIds = new Set()) {
             if (reports.length === 0) {
                 ocorrenciasListDiv.innerHTML = `<p class="text-center text-gray-500 mt-8">Nenhuma ocorrência encontrada com os filtros atuais.</p>`;
                 return;
@@ -296,9 +348,13 @@
                 }
 
                 const statusColor = data.anonimo ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800';
+                
+                // 🚨 NOVO: Aplica a classe de piscar se o ID estiver no Set 🚨
+                const isNew = newReportIds.has(data.id);
+                const rowClasses = isNew ? 'blinking-row' : '';
 
                 htmlContent += `
-                    <tr>
+                    <tr id="report-row-${data.id}" class="${rowClasses}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${dateStr}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${data.municipio} - ${data.estado}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${data.idade} anos, ${data.sexo}</td>
@@ -312,6 +368,16 @@
                         </td>
                     </tr>
                 `;
+                
+                // 🚨 NOVO: Agenda a remoção da classe de piscar após 15 segundos 🚨
+                if (isNew) {
+                    setTimeout(() => {
+                        const row = document.getElementById(`report-row-${data.id}`);
+                        if (row) {
+                            row.classList.remove('blinking-row');
+                        }
+                    }, 15000); 
+                }
             });
 
             htmlContent += `
@@ -322,12 +388,8 @@
             ocorrenciasListDiv.innerHTML = htmlContent;
         }
         
-        // --- 7. IMPLEMENTAÇÃO DA MODAL DE DETALHES ---
+        // --- 7. IMPLEMENTAÇÃO DA MODAL DE DETALHES (INALTERADA) ---
 
-        /**
-         * Abre a modal e preenche os campos com os dados da denúncia.
-         * A função é global (window.viewDetails) para ser chamada pelo onclick no HTML.
-         */
         window.viewDetails = (reportId) => {
             // Encontra a denúncia correspondente no array armazenado
             const report = allReportsData.find(r => r.id === reportId);
